@@ -98,4 +98,34 @@ describe("CompaniesPage edit", () => {
       });
     });
   });
+
+  it("confirms a saved edit and closes the panel", async () => {
+    const user = userEvent.setup();
+    renderPage();
+
+    await user.click(await screen.findByRole("button", { name: "Editar" }));
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+
+    expect(await screen.findByRole("status")).toHaveTextContent(
+      "Se guardaron los cambios.",
+    );
+    expect(
+      screen.queryByRole("textbox", { name: /razón social/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("opens an empty create panel and can cancel without saving", async () => {
+    const user = userEvent.setup();
+    renderPage();
+
+    await screen.findByText("DEMO-0001");
+    await user.click(screen.getByRole("button", { name: "Nueva empresa" }));
+    expect(screen.getByRole("textbox", { name: /razón social/i })).toHaveValue("");
+    await user.click(screen.getByRole("button", { name: "Cancelar" }));
+
+    expect(
+      screen.queryByRole("textbox", { name: /razón social/i }),
+    ).not.toBeInTheDocument();
+    expect(updateCompany).not.toHaveBeenCalled();
+  });
 });

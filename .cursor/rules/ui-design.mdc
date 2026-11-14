@@ -1,0 +1,47 @@
+---
+description: Reglas visuales del escritorio RH System. Usarlas al crear o revisar interfaz, estados y navegación.
+globs: src/**/*.{tsx,css}
+alwaysApply: false
+---
+
+# Interfaz de RH System
+
+Escritorio de negocio para Windows: sobrio, moderno y mínimo. Tema claro y oscuro completos. Paleta neutra con acento turquesa. Jerarquía legible. Sin gradientes decorativos, sin efectos que resten lectura y sin aspecto de plantilla genérica de administración.
+
+## Texto
+
+- La copia visible va en español, con lenguaje de género neutro basado en el rol.
+- Los identificadores de código van en inglés.
+- No inventes cifras de negocio. Si no hay datos, usa un estado vacío o marca el bloque como demostrativo.
+- No uses datos personales reales. Las empresas de ejemplo son ficticias.
+
+## Composición
+
+- Un nivel de superficie. No anides tarjetas.
+- No pongas un rótulo pequeño encima del título.
+- No armes la página con una cuadrícula de tarjetas de icono, título y texto del mismo tamaño.
+- No uses un borde izquierdo de color de más de 1 px en tarjetas o filas.
+- El estado activo de la navegación es fondo e icono, no una barra lateral gruesa.
+- El espacio, el borde y el radio salen de los tokens de `src/index.css`. Radio base: `0.375rem`.
+- La única animación habitual es el ancho de la barra lateral (200 ms). Respeta `prefers-reduced-motion`.
+
+## Navegación y ventanas
+
+- La barra lateral permanece en el flujo. No la conviertas en un panel fijo que tape el contenido.
+- Por defecto está expandida por encima de 1023 px y contraída en viewports más estrechos. La preferencia guardada manda.
+- En ventana estrecha, las acciones de una tabla tienen que verse o poder alcanzarse con desplazamiento dentro de la tabla, no quedar cortadas fuera de la ventana.
+- Un panel lateral de formulario ocupa el ancho útil por debajo de 1024 px.
+
+## Controles
+
+- Iconos de Lucide, un mismo tamaño óptico en la navegación.
+- Botones e inputs con nombre accesible estable. No cambies «Editar», «Activar», «Crear empresa» ni «Guardar cambios» sin actualizar las pruebas.
+- Todo control interactivo tiene estado de foco visible.
+- Los campos opcionales vacíos se envían como `null`. Al editar, el nombre comercial y el identificador fiscal se conservan salvo que quien usa el formulario los borre.
+
+## Temas y contraste
+
+- Define cada color en `:root` y en `.dark`.
+- Texto de lectura sobre superficie neutra: contraste de al menos 4.5:1.
+- El texto secundario no va en gris sobre una superficie de color. Tiñe ese texto con el mismo matiz.
+- Comprueba 1280×800, 1024×768 y 800×600, en claro y en oscuro, antes de dar por cerrada una pantalla.

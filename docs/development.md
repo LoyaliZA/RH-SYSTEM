@@ -69,6 +69,8 @@ cargo test --manifest-path src-tauri/Cargo.toml
 
 `npm run check:boundaries` falla si `src/` menciona SQLite. Las pruebas de Rust usan una base temporal y empresas ficticias. No uses datos personales reales.
 
+`npm run test:visual` ejecuta Playwright contra el servidor de Vite. Cubre 1280×800, 1024×768 y 800×600 en tema claro y oscuro, el desbordamiento horizontal, el contraste del texto y el flujo de editar una empresa sin perder el nombre comercial ni el identificador fiscal. No entra en `npm run check`: el flujo de CI no instala Chromium. La ventana nativa sigue comprobándose con `npm run tauri dev`.
+
 La comprobación visual de esta fase es la ventana nativa de Tauri, no solo el navegador. En un entorno sin sesión gráfica, `xvfb-run npm run tauri dev` levanta un display virtual. Si la ventana nativa no puede abrirse, hay que decirlo y no dar la interfaz por validada.
 
 ## Datos locales

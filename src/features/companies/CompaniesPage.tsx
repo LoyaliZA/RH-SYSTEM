@@ -1,8 +1,19 @@
 import { useState } from "react";
 
+import { PageHeader } from "@/components/layout/PageHeader";
 import { EmptyState } from "@/components/states/EmptyState";
 import { ErrorState } from "@/components/states/ErrorState";
 import { LoadingState } from "@/components/states/LoadingState";
+import { StatusNotice } from "@/components/states/StatusNotice";
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetBody,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 
 import { useCompanies } from "./company-context";
 import { CompanyForm } from "./CompanyForm";
@@ -15,18 +26,32 @@ import {
   type CompanyFormValues,
 } from "./types";
 
+type PanelMode = "closed" | "create" | "edit";
+
 export function CompaniesPage() {
   const { status, companies, error, pending, reload, create, update, activate } =
     useCompanies();
-  const [mode, setMode] = useState<"create" | "edit">("create");
+  const [mode, setMode] = useState<PanelMode>("closed");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [values, setValues] = useState<CompanyFormValues>(emptyCompanyForm);
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<CompanyField, string>>>(
     {},
   );
   const [formError, setFormError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [pageError, setPageError] = useState<string | null>(null);
 
-  function resetForm() {
+  function closePanel() {
+    setMode("closed");
+    setEditingId(null);
+    setValues(emptyCompanyForm);
+    setFieldErrors({});
+    setFormError(null);
+  }
+
+  function openCreate() {
+    setNotice(null);
+    setPageError(null);
     setMode("create");
     setEditingId(null);
     setValues(emptyCompanyForm);
@@ -35,6 +60,8 @@ export function CompaniesPage() {
   }
 
   function editCompany(company: Company) {
+    setNotice(null);
+    setPageError(null);
     setMode("edit");
     setEditingId(company.id);
     setValues(formValuesFromCompany(company));
@@ -55,7 +82,9 @@ export function CompaniesPage() {
         ? await update(editingId, input)
         : await create(input);
     if (result.ok) {
-      resetForm();
+      setNotice(mode === "edit" ? "Se guardaron los cambios." : "Se creó la empresa.");
+      setPageError(null);
+      closePanel();
       return;
     }
     setFieldErrors(result.fieldErrors);
@@ -63,57 +92,106 @@ export function CompaniesPage() {
   }
 
   async function activateCompany(company: Company) {
+    setNotice(null);
+    setPageError(null);
     const result = await activate(company.id);
-    if (!result.ok) {
-      setFormError(result.formError);
+    if (result.ok) {
+      setNotice("La empresa quedó activa.");
+      return;
     }
+    setPageError(result.formError ?? "No se pudo activar la empresa.");
   }
 
+  const panelTitle = mode === "edit" ? "Editar empresa" : "Nueva empresa";
+  const panelDescription =
+    mode === "edit"
+      ? "Actualiza los datos guardados en este equipo."
+      : "La empresa queda guardada en este equipo. Si todavía no hay una empresa activa, la nueva queda activa.";
+
   return (
-    <div className="space-y-6">
-      <header className="max-w-prose">
-        <h1 className="text-2xl font-semibold tracking-tight">Empresas</h1>
-        <p className="mt-3 text-base text-muted-foreground">
-          Crea y actualiza las empresas de este escritorio. La empresa activa aparece en
-          el encabezado y los datos siguen disponibles al cerrar la aplicación.
+    <div className="flex flex-col gap-6">
+      <PageHeader
+        title="Empresas"
+        description="Crea y actualiza las empresas de este escritorio. La empresa activa aparece en el encabezado y los datos siguen disponibles al cerrar la aplicación."
+        actions={
+          status === "ready" ? (
+            <Button type="button" onClick={openCreate} disabled={pending}>
+              Nueva empresa
+            </Button>
+          ) : null
+        }
+      />
+
+      {notice ? <StatusNotice>{notice}</StatusNotice> : null}
+      {pageError ? (
+        <p
+          role="alert"
+          className="rounded-md border border-border bg-card px-3 py-2 text-sm text-destructive"
+        >
+          {pageError}
         </p>
-      </header>
+      ) : null}
 
       {status === "loading" ? <LoadingState label="Cargando empresas…" /> : null}
       {status === "error" && error ? (
         <ErrorState message={error.message} onRetry={() => void reload()} />
       ) : null}
-      {status === "ready" ? (
-        <div className="grid items-start gap-8 lg:grid-cols-3">
-          <section className="space-y-4 lg:col-span-2">
-            {companies.length === 0 ? (
-              <EmptyState
-                title="Todavía no hay empresas"
-                description="Crea la primera empresa con el formulario. Quedará activa para el resto del escritorio."
-              />
-            ) : (
-              <CompanyTable
-                companies={companies}
+      {status === "ready" && companies.length === 0 ? (
+        <EmptyState
+          title="Todavía no hay empresas"
+          description="Crea la primera empresa con Nueva empresa. Quedará activa para el resto del escritorio."
+        />
+      ) : null}
+      {status === "ready" && companies.length > 0 ? (
+        <CompanyTable
+          companies={companies}
+          pending={pending}
+          selectedId={editingId}
+          onEdit={editCompany}
+          onActivate={(company) => void activateCompany(company)}
+        />
+      ) : null}
+
+      {mode !== "closed" ? (
+        <Sheet
+          open
+          onOpenChange={(open) => {
+            if (!open && !pending) {
+              closePanel();
+            }
+          }}
+        >
+          <SheetContent
+            onPointerDownOutside={(event) => {
+              if (pending) {
+                event.preventDefault();
+              }
+            }}
+            onEscapeKeyDown={(event) => {
+              if (pending) {
+                event.preventDefault();
+              }
+            }}
+          >
+            <SheetHeader>
+              <SheetTitle>{panelTitle}</SheetTitle>
+              <SheetDescription>{panelDescription}</SheetDescription>
+            </SheetHeader>
+            <SheetBody>
+              <CompanyForm
+                embedded
+                mode={mode === "edit" ? "edit" : "create"}
+                values={values}
+                fieldErrors={fieldErrors}
+                formError={formError}
                 pending={pending}
-                selectedId={editingId}
-                onEdit={editCompany}
-                onActivate={(company) => void activateCompany(company)}
+                onChange={changeField}
+                onSubmit={() => void submit()}
+                onCancel={closePanel}
               />
-            )}
-          </section>
-          <section className="rounded-md border border-border bg-card p-4">
-            <CompanyForm
-              mode={mode}
-              values={values}
-              fieldErrors={fieldErrors}
-              formError={formError}
-              pending={pending}
-              onChange={changeField}
-              onSubmit={() => void submit()}
-              onCancel={mode === "edit" ? resetForm : undefined}
-            />
-          </section>
-        </div>
+            </SheetBody>
+          </SheetContent>
+        </Sheet>
       ) : null}
     </div>
   );
