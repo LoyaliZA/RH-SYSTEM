@@ -192,6 +192,36 @@ mod tests {
     }
 
     #[test]
+    fn updating_legal_name_keeps_trade_name_and_tax_id() {
+        let database = TempDatabase::new();
+        let repository = SqliteCompanyRepository::open(database.path()).unwrap();
+        let created =
+            create_company(&repository, write("Taller Norte", "Norte", "DEMO-0001")).unwrap();
+
+        let updated = update_company(
+            &repository,
+            &created.id,
+            write("Taller Norte Actualizado", "Norte", "DEMO-0001"),
+        )
+        .unwrap();
+        assert_eq!(updated.legal_name, "Taller Norte Actualizado");
+        assert_eq!(updated.trade_name.as_deref(), Some("Norte"));
+        assert_eq!(updated.tax_id.as_deref(), Some("DEMO-0001"));
+        assert_eq!(updated.display_name, "Norte");
+        assert_eq!(updated.created_at, created.created_at);
+
+        drop(repository);
+        let reopened = SqliteCompanyRepository::open(database.path()).unwrap();
+        let listed = list_companies(&reopened).unwrap();
+        assert_eq!(listed.len(), 1);
+        assert_eq!(listed[0].legal_name, "Taller Norte Actualizado");
+        assert_eq!(listed[0].trade_name.as_deref(), Some("Norte"));
+        assert_eq!(listed[0].tax_id.as_deref(), Some("DEMO-0001"));
+        assert_eq!(listed[0].display_name, "Norte");
+        assert!(listed[0].is_active);
+    }
+
+    #[test]
     fn second_company_does_not_replace_the_active_one() {
         let database = TempDatabase::new();
         let repository = SqliteCompanyRepository::open(database.path()).unwrap();

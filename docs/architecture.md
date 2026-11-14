@@ -13,7 +13,7 @@ RH System es una aplicación de escritorio. La distribución prevista es un inst
 
 Están disponibles el inicio y empresas. Organización, expedientes, puestos, usuarios y auditoría, documentos, movimientos laborales, asistencia, vacaciones y prenómina aparecen en la navegación marcados como no implementados.
 
-Empresas permite crear, leer y actualizar. No hay baja. La primera empresa creada queda activa. Las siguientes no la reemplazan hasta que alguien elija «Activar». El encabezado muestra el nombre comercial y, si no existe, la razón social.
+Empresas permite crear, leer y actualizar. No hay baja. La primera empresa creada queda activa. Las siguientes no la reemplazan hasta que alguien elija «Activar». El encabezado muestra el nombre comercial y, si no existe, la razón social. Editar carga la razón social, el nombre comercial y el identificador fiscal guardados. Guardar conserva esos dos últimos salvo que se dejen vacíos.
 
 ## Flujo de una operación
 

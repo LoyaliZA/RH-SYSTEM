@@ -7,7 +7,7 @@ import { LoadingState } from "@/components/states/LoadingState";
 import { useCompanies } from "./company-context";
 import { CompanyForm } from "./CompanyForm";
 import { CompanyTable } from "./CompanyTable";
-import { toCompanyInput } from "./submit";
+import { formValuesFromCompany, toCompanyInput } from "./submit";
 import {
   emptyCompanyForm,
   type Company,
@@ -37,11 +37,7 @@ export function CompaniesPage() {
   function editCompany(company: Company) {
     setMode("edit");
     setEditingId(company.id);
-    setValues({
-      legalName: company.legalName,
-      tradeName: company.tradeName ?? "",
-      taxId: company.taxId ?? "",
-    });
+    setValues(formValuesFromCompany(company));
     setFieldErrors({});
     setFormError(null);
   }

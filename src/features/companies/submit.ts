@@ -1,4 +1,12 @@
-import type { CompanyFormValues, CompanyInput } from "./types";
+import type { Company, CompanyFormValues, CompanyInput } from "./types";
+
+export function formValuesFromCompany(company: Company): CompanyFormValues {
+  return {
+    legalName: company.legalName,
+    tradeName: company.tradeName ?? "",
+    taxId: company.taxId ?? "",
+  };
+}
 
 export function toCompanyInput(values: CompanyFormValues): CompanyInput {
   return {
