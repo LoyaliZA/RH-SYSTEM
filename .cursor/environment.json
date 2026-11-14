@@ -1,0 +1,4 @@
+{
+  "name": "rh-system",
+  "install": "bash .cursor/install.sh"
+}
