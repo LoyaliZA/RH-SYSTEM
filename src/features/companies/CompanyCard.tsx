@@ -1,3 +1,5 @@
+import { ArrowUpRight } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { IconWell } from "@/components/ui/icon-well";
@@ -10,7 +12,6 @@ type CompanyCardProps = {
   company: Company;
   pending: boolean;
   selected: boolean;
-  prominence: "lead" | "compact";
   onEdit: (company: Company) => void;
   onActivate: (company: Company) => void;
 };
@@ -19,66 +20,52 @@ export function CompanyCard({
   company,
   pending,
   selected,
-  prominence,
   onEdit,
   onActivate,
 }: CompanyCardProps) {
   const headingId = `empresa-${company.id}`;
-  const lead = prominence === "lead";
 
   return (
     <Card
       role="article"
       aria-labelledby={headingId}
       data-selected={selected ? "true" : undefined}
-      className={cn("flex h-full flex-col gap-4 p-5", selected && "bg-accent")}
+      className={cn(
+        "flex h-full flex-col gap-5 p-5 transition-colors duration-[var(--motion-fast)] motion-reduce:transition-none",
+        selected && "bg-accent",
+      )}
     >
       <div className="flex items-start justify-between gap-3">
         <IconWell
           tone={company.isActive ? "active" : "mintSoft"}
-          size={lead ? "md" : "sm"}
+          className="size-[4.5rem] rounded-2xl"
         >
-          <span
-            className={cn("font-semibold tracking-tight", lead ? "text-sm" : "text-xs")}
-          >
+          <span className="text-lg font-semibold tracking-tight">
             {monogram(company.legalName)}
           </span>
         </IconWell>
-        <StatusLabel tone={company.isActive ? "active" : "inactive"}>
+        <StatusLabel marker={false} tone={company.isActive ? "active" : "inactive"}>
           {company.isActive ? "Activa" : "Inactiva"}
         </StatusLabel>
       </div>
       <div className="min-w-0">
         <h2
           id={headingId}
-          className={cn(
-            "font-semibold tracking-[-0.02em] text-balance break-words text-foreground",
-            lead ? "text-2xl leading-8" : "text-xl leading-7",
-          )}
+          className="text-2xl leading-8 font-semibold tracking-[-0.02em] text-balance break-words text-foreground"
         >
           {company.legalName}
         </h2>
-        <p
-          className={cn(
-            "mt-1 text-sm break-words",
-            company.tradeName ? "text-foreground" : "text-muted-foreground",
-          )}
-        >
-          {company.tradeName ?? "Sin nombre comercial"}
-        </p>
-        <p className="mt-3 text-sm">
-          <span className="block text-muted-foreground">Identificador fiscal</span>
-          <span
-            className={cn(
-              "mt-0.5 block tabular-nums",
-              company.taxId ? "font-medium text-foreground" : "text-muted-foreground",
-            )}
-          >
+        <p className="mt-2 text-sm break-words text-muted-foreground">
+          <span className={company.tradeName ? "text-foreground" : undefined}>
+            {company.tradeName ?? "Sin nombre comercial"}
+          </span>
+          <span aria-hidden="true"> · </span>
+          <span className={cn("tabular-nums", company.taxId && "text-foreground")}>
             {company.taxId ?? "Sin identificador"}
           </span>
         </p>
       </div>
-      <div className="mt-auto flex flex-wrap gap-2">
+      <div className="mt-auto flex flex-wrap gap-2 border-t border-border pt-4">
         <Button
           type="button"
           variant="outline"
@@ -86,10 +73,12 @@ export function CompanyCard({
           onClick={() => onEdit(company)}
         >
           Editar
+          <ArrowUpRight aria-hidden="true" />
         </Button>
         {company.isActive ? null : (
           <Button type="button" disabled={pending} onClick={() => onActivate(company)}>
             Activar
+            <ArrowUpRight aria-hidden="true" />
           </Button>
         )}
       </div>

@@ -1,3 +1,4 @@
+import { Plus } from "lucide-react";
 import { useState } from "react";
 
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -54,7 +55,6 @@ function CompanyBoard({
             company={company}
             pending={pending}
             selected={selectedId === company.id}
-            prominence={company.isActive ? "lead" : "compact"}
             onEdit={onEdit}
             onActivate={onActivate}
           />
@@ -152,6 +152,7 @@ export function CompaniesPage() {
         actions={
           status === "ready" ? (
             <Button type="button" onClick={openCreate} disabled={pending}>
+              <Plus aria-hidden="true" />
               Nueva empresa
             </Button>
           ) : null

@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 
 type StatusLabelProps = {
   tone: "active" | "available" | "inactive" | "pending" | "danger";
+  marker?: boolean;
   children: string;
 };
 
@@ -21,7 +22,7 @@ const dots = {
   danger: "bg-destructive",
 };
 
-export function StatusLabel({ tone, children }: StatusLabelProps) {
+export function StatusLabel({ tone, marker = true, children }: StatusLabelProps) {
   return (
     <span
       className={cn(
@@ -29,7 +30,9 @@ export function StatusLabel({ tone, children }: StatusLabelProps) {
         tones[tone],
       )}
     >
-      <span className={cn("size-1.5 rounded-full", dots[tone])} aria-hidden="true" />
+      {marker ? (
+        <span className={cn("size-1.5 rounded-full", dots[tone])} aria-hidden="true" />
+      ) : null}
       {children}
     </span>
   );

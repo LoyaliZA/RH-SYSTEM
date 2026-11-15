@@ -37,7 +37,7 @@ export function Header({
         <Link
           to="/companies"
           title={companyLabel}
-          className="min-w-0 truncate rounded-md text-sm text-foreground"
+          className="min-w-0 truncate rounded-md text-sm text-foreground transition-colors duration-[var(--motion-fast)] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none"
         >
           <span className="text-muted-foreground">Empresa activa: </span>
           <span className="font-semibold">{companyLabel}</span>

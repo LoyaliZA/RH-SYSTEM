@@ -1,3 +1,4 @@
+import { ArrowUpRight } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -63,9 +64,10 @@ export function DashboardPage() {
               <p>
                 <Link
                   to="/companies"
-                  className="text-sm font-medium text-primary-ink underline decoration-primary-ink/40 underline-offset-4"
+                  className="inline-flex items-center gap-1 text-sm font-medium text-primary-ink underline decoration-primary-ink/40 underline-offset-4"
                 >
                   Ir a empresas
+                  <ArrowUpRight className="size-4" aria-hidden="true" />
                 </Link>
               </p>
             </Card>
@@ -74,8 +76,8 @@ export function DashboardPage() {
             <Card className="flex h-full flex-col gap-5 p-6">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex min-w-0 items-start gap-4">
-                  <IconWell tone="active" size="md">
-                    <span className="text-sm font-semibold tracking-tight">
+                  <IconWell tone="active" className="size-[4.5rem] rounded-2xl">
+                    <span className="text-lg font-semibold tracking-tight">
                       {monogram(
                         activeCompany?.legalName ?? activeCompany?.displayName ?? "",
                       )}
@@ -86,7 +88,7 @@ export function DashboardPage() {
                       <h2 className="text-[2rem] leading-10 font-semibold tracking-[-0.02em] text-balance break-words">
                         {activeCompany.displayName}
                       </h2>
-                      {activeCompany.tradeName ? (
+                      {activeCompany.legalName !== activeCompany.displayName ? (
                         <p className="mt-1 text-sm text-muted-foreground">
                           {activeCompany.legalName}
                         </p>
@@ -99,7 +101,9 @@ export function DashboardPage() {
                   )}
                 </div>
                 {activeCompany?.isActive ? (
-                  <StatusLabel tone="active">Activa</StatusLabel>
+                  <StatusLabel marker={false} tone="active">
+                    Activa
+                  </StatusLabel>
                 ) : null}
               </div>
               <div className="space-y-2">
@@ -123,16 +127,13 @@ export function DashboardPage() {
                 </p>
               ) : null}
               {activeCompany ? (
-                <p className="text-sm">
-                  <span className="block text-muted-foreground">
-                    Identificador fiscal
-                  </span>
+                <p className="text-sm text-muted-foreground">
+                  Identificador fiscal
+                  <span aria-hidden="true"> · </span>
                   <span
                     className={cn(
-                      "mt-1 block tabular-nums",
-                      activeCompany.taxId
-                        ? "font-medium text-foreground"
-                        : "text-muted-foreground",
+                      "tabular-nums",
+                      activeCompany.taxId ? "font-medium text-foreground" : undefined,
                     )}
                   >
                     {activeCompany.taxId ?? "Sin identificador"}
@@ -142,9 +143,10 @@ export function DashboardPage() {
               <p className="mt-auto">
                 <Link
                   to="/companies"
-                  className="text-sm font-medium text-primary-ink underline decoration-primary-ink/40 underline-offset-4"
+                  className="inline-flex items-center gap-1 text-sm font-medium text-primary-ink underline decoration-primary-ink/40 underline-offset-4"
                 >
                   Administrar empresas
+                  <ArrowUpRight className="size-4" aria-hidden="true" />
                 </Link>
               </p>
             </Card>

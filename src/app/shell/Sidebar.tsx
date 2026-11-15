@@ -72,7 +72,7 @@ export function Sidebar({ companyName = null, companyStatus = "ready" }: Sidebar
           <Link
             to="/companies"
             title={companyLabel(companyName, companyStatus)}
-            className="block rounded-xl bg-sidebar-accent px-3 py-2 text-sm leading-5 text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="block rounded-xl bg-sidebar-accent px-3 py-2 text-sm leading-5 text-foreground transition-colors duration-[var(--motion-fast)] hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none"
           >
             <span className="block">Empresa activa:</span>
             <span className="block truncate font-semibold">
@@ -153,7 +153,7 @@ function SidebarLink({ module, expanded }: { module: AppModule; expanded: boolea
       end={module.to === "/"}
       className={({ isActive }) =>
         cn(
-          "flex h-10 items-center gap-3 rounded-md px-3 text-sm text-sidebar-foreground transition-colors duration-[var(--motion-fast)]",
+          "flex h-10 items-center gap-3 rounded-lg px-3 text-sm text-sidebar-foreground transition-colors duration-[var(--motion-fast)] motion-reduce:transition-none",
           !expanded && "justify-center px-0",
           isActive ? "bg-primary-soft font-medium" : "hover:bg-sidebar-accent/70",
         )

@@ -26,7 +26,7 @@ function SheetContent({
         {children}
         <DialogPrimitive.Close
           aria-label="Cerrar"
-          className="absolute top-3 right-3 inline-flex size-8 items-center justify-center rounded-md text-foreground hover:bg-muted"
+          className="absolute top-3 right-3 inline-flex size-8 items-center justify-center rounded-md text-foreground transition-colors duration-[var(--motion-fast)] hover:bg-muted motion-reduce:transition-none"
         >
           <X className="size-4" aria-hidden="true" />
         </DialogPrimitive.Close>
