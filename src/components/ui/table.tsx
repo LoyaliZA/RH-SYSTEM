@@ -4,11 +4,13 @@ import { cn } from "@/lib/utils";
 
 function Table({ className, ...props }: React.ComponentProps<"table">) {
   return (
-    <div className="w-full min-w-0 overflow-x-auto rounded-md border border-border">
-      <table
-        className={cn("w-full caption-bottom border-collapse text-sm", className)}
-        {...props}
-      />
+    <div className="rounded-lg shadow-card">
+      <div className="w-full min-w-0 overflow-x-auto rounded-lg border border-border bg-card">
+        <table
+          className={cn("w-full caption-bottom border-collapse text-sm", className)}
+          {...props}
+        />
+      </div>
     </div>
   );
 }

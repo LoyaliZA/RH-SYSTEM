@@ -46,20 +46,23 @@ export function DashboardPage() {
           />
         ) : null}
         {status === "ready" && companies.length === 0 ? (
-          <div className="rounded-md border border-border bg-card px-5 py-4">
+          <div className="rounded-lg border border-border bg-card px-5 py-4 shadow-card">
             <p className="text-base text-foreground">Sin empresa activa.</p>
             <p className="mt-2 max-w-[68ch] text-base text-muted-foreground">
               Crea la primera empresa para usarla en el resto del escritorio.
             </p>
             <p className="mt-4">
-              <Link to="/companies" className="text-sm font-medium text-primary">
+              <Link
+                to="/companies"
+                className="text-sm font-medium text-primary-ink underline decoration-primary-ink/40 underline-offset-4"
+              >
                 Ir a empresas
               </Link>
             </p>
           </div>
         ) : null}
         {status === "ready" && companies.length > 0 ? (
-          <div className="rounded-md border border-border bg-card px-5 py-4">
+          <div className="rounded-lg border border-border bg-card px-5 py-4 shadow-card">
             <div className="space-y-2">
               <Label htmlFor="company-selector">Elegir empresa</Label>
               <NativeSelect
@@ -96,7 +99,10 @@ export function DashboardPage() {
               </p>
             )}
             <p className="mt-4">
-              <Link to="/companies" className="text-sm font-medium text-primary">
+              <Link
+                to="/companies"
+                className="text-sm font-medium text-primary-ink underline decoration-primary-ink/40 underline-offset-4"
+              >
                 Administrar empresas
               </Link>
             </p>
@@ -159,35 +165,37 @@ function ModuleGroup({
   return (
     <div className="flex flex-col gap-2">
       <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>
-      <ul className="divide-y divide-border overflow-hidden rounded-md border border-border bg-card">
-        {modules.map((module) => (
-          <li key={module.id}>
-            <Link
-              to={module.to}
-              className="flex gap-3 px-4 py-3 hover:bg-muted/70 focus-visible:bg-muted/70"
-            >
-              <module.icon
-                className={cn(
-                  "mt-0.5 size-4 shrink-0",
-                  module.implemented ? "text-primary" : "text-muted-foreground",
-                )}
-                aria-hidden="true"
-              />
-              <span className="min-w-0 flex-1">
-                <span className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                  <span className="font-medium text-foreground">{module.label}</span>{" "}
-                  <span className="text-sm text-muted-foreground">
-                    {module.implemented ? "Disponible" : "En preparación"}
+      <div className="rounded-lg shadow-card">
+        <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-card">
+          {modules.map((module) => (
+            <li key={module.id}>
+              <Link
+                to={module.to}
+                className="flex gap-3 px-4 py-3 hover:bg-muted/70 focus-visible:bg-muted/70"
+              >
+                <module.icon
+                  className={cn(
+                    "mt-0.5 size-4 shrink-0",
+                    module.implemented ? "text-primary-ink" : "text-muted-foreground",
+                  )}
+                  aria-hidden="true"
+                />
+                <span className="min-w-0 flex-1">
+                  <span className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                    <span className="font-medium text-foreground">{module.label}</span>{" "}
+                    <span className="text-sm text-muted-foreground">
+                      {module.implemented ? "Disponible" : "En preparación"}
+                    </span>
+                  </span>{" "}
+                  <span className="mt-0.5 block text-sm text-muted-foreground">
+                    {module.summary}
                   </span>
-                </span>{" "}
-                <span className="mt-0.5 block text-sm text-muted-foreground">
-                  {module.summary}
                 </span>
-              </span>
-            </Link>
-          </li>
-        ))}
-      </ul>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }

@@ -14,7 +14,10 @@ export function NotImplemented({ title, description }: NotImplementedProps) {
       </p>
       <p className="mt-2 text-base text-muted-foreground">{description}</p>
       <p className="mt-6">
-        <Link to="/" className="text-sm font-medium text-primary">
+        <Link
+          to="/"
+          className="text-sm font-medium text-primary-ink underline decoration-primary-ink/40 underline-offset-4"
+        >
           Volver al inicio
         </Link>
       </p>

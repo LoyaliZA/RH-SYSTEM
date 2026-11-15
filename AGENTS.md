@@ -28,6 +28,10 @@ El límite de aplicación son los casos de uso. Un backend central posterior pue
 - Cada cambio se acompaña de una verificación que realmente se ejecutó. No marcar como exitosa una prueba que no corrió.
 - No publicar un release de GitHub desde esta fase. El instalador de Windows es un artefacto de CI.
 
+## Interfaz
+
+La identidad visual oficial es [docs/design/RH-SYSTEM-DESIGN-SYSTEM-v1.0.md](docs/design/RH-SYSTEM-DESIGN-SYSTEM-v1.0.md). La especificación de pantallas es complementaria: [docs/design/RH-UI-SPECIFICATIONS.md](docs/design/RH-UI-SPECIFICATIONS.md). El índice que ordena ambos, sin repetir sus reglas, es [docs/design-system.md](docs/design-system.md). Si una frase de este archivo, de la regla de interfaz o del skill contradice esos documentos, manda la identidad oficial.
+
 ## Cursor Cloud
 
 La configuración versionada es `.cursor/environment.json`, según el esquema `https://cursor.com/schemas/environment.schema.json`. Usa los campos `name` e `install`. No usa Docker.

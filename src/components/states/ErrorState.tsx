@@ -14,7 +14,7 @@ export function ErrorState({
   return (
     <div
       role="alert"
-      className="max-w-[68ch] rounded-md border border-border bg-card px-5 py-5"
+      className="max-w-[68ch] rounded-lg border border-border bg-card px-5 py-5 shadow-card"
     >
       <h2 className="text-lg font-semibold tracking-tight text-foreground">{title}</h2>
       <p className="mt-2 text-base text-muted-foreground">{message}</p>
