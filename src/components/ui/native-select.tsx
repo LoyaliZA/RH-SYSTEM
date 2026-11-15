@@ -5,10 +5,10 @@ import { cn } from "@/lib/utils";
 
 function NativeSelect({ className, ...props }: React.ComponentProps<"select">) {
   return (
-    <div className="relative w-full max-w-sm">
+    <div className="relative w-full">
       <select
         className={cn(
-          "h-10 w-full appearance-none rounded-md border border-input bg-card py-0 pr-10 pl-3 text-base text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+          "h-10 w-full appearance-none rounded-md border border-input bg-card py-0 pr-10 pl-3 text-base text-foreground outline-none transition-[border-color,box-shadow] duration-[var(--motion-fast)] focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
           className,
         )}
         {...props}

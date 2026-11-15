@@ -15,7 +15,7 @@ La especificación marca cada decisión con una de tres etiquetas. No se interca
 - **PROPUESTA:** detalle pendiente de validar contra el producto. No es una función existente ni una orden de maquetar.
 - **POR VERIFICAR:** comportamiento que hay que confirmar en el repositorio antes de implementarlo.
 
-Las cinco imágenes de composición no están en el repositorio. Hasta que lleguen, no se inventa un tablero bento ni una maquetación de tarjetas.
+Las referencias aprobadas están en [docs/design/references/](design/references/), sin modificar sus píxeles. Inicio sigue `03-inicio-bento` y Empresas sigue `01-seleccion-empresa`. El isotipo de `05-acceso` es el logo oficial. `02`, `04` y `06` aportan densidad, pastillas, radio y el botón amatista. No se copian cifras, personas ni adornos de una sola pantalla.
 
 ## Dónde vive la fase A
 

@@ -8,7 +8,7 @@ alwaysApply: false
 
 Antes de cambiar la interfaz, lee el índice `docs/design-system.md` y los dos documentos a los que apunta. La identidad oficial manda sobre esta regla. No copies aquí la paleta ni el nombre de la fuente.
 
-La especificación de pantallas distingue **APROBADO**, **PROPUESTA** y **POR VERIFICAR**. Una propuesta no es una función existente. Lo que está por verificar se confirma en el repositorio antes de implementarlo. Las imágenes de composición no están en el repositorio: no inventes un tablero bento ni una maquetación de tarjetas.
+La especificación de pantallas distingue **APROBADO**, **PROPUESTA** y **POR VERIFICAR**. Una propuesta no es una función existente. Lo que está por verificar se confirma en el repositorio antes de implementarlo. Las referencias aprobadas están en `docs/design/references/`. Inicio sigue `03-inicio-bento` y Empresas sigue `01-seleccion-empresa`, sin cifras inventadas ni adornos de una sola pantalla.
 
 ## Texto y nombres
 

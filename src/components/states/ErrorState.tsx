@@ -1,4 +1,8 @@
+import { AlertCircle } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { IconWell } from "@/components/ui/icon-well";
 
 type ErrorStateProps = {
   title?: string;
@@ -12,17 +16,19 @@ export function ErrorState({
   onRetry,
 }: ErrorStateProps) {
   return (
-    <div
-      role="alert"
-      className="max-w-[68ch] rounded-lg border border-border bg-card px-5 py-5 shadow-card"
-    >
-      <h2 className="text-lg font-semibold tracking-tight text-foreground">{title}</h2>
+    <Card role="alert" className="max-w-[68ch] px-6 py-6">
+      <IconWell tone="danger">
+        <AlertCircle aria-hidden="true" />
+      </IconWell>
+      <h2 className="mt-4 text-lg font-semibold tracking-tight text-foreground">
+        {title}
+      </h2>
       <p className="mt-2 text-base text-muted-foreground">{message}</p>
       {onRetry ? (
-        <Button type="button" variant="outline" className="mt-4" onClick={onRetry}>
+        <Button type="button" variant="outline" className="mt-5" onClick={onRetry}>
           Reintentar
         </Button>
       ) : null}
-    </div>
+    </Card>
   );
 }

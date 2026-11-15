@@ -18,7 +18,7 @@ function SheetContent({
       <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-foreground/20" />
       <DialogPrimitive.Content
         className={cn(
-          "fixed top-0 right-0 z-50 flex h-svh w-full flex-col border-l border-border bg-card text-card-foreground shadow-panel outline-none min-[1024px]:max-w-[24rem]",
+          "rh-drawer fixed top-0 right-0 z-50 flex h-svh w-full flex-col border-l border-border bg-card text-card-foreground shadow-panel outline-none min-[1024px]:max-w-[24rem] min-[1024px]:rounded-l-lg",
           className,
         )}
         {...props}

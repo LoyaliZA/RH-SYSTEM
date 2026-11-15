@@ -1,7 +1,8 @@
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { useEffect } from "react";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
+import { BrandMark } from "@/components/brand/BrandMark";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import {
@@ -13,7 +14,12 @@ import { cn } from "@/lib/utils";
 
 import { useSidebarPreference } from "./use-sidebar";
 
-export function Sidebar() {
+type SidebarProps = {
+  companyName?: string | null;
+  companyStatus?: "loading" | "ready" | "error";
+};
+
+export function Sidebar({ companyName = null, companyStatus = "ready" }: SidebarProps) {
   const { expanded, toggle } = useSidebarPreference();
 
   useEffect(() => {
@@ -50,14 +56,31 @@ export function Sidebar() {
         "transition-[width] duration-[var(--motion-panel)] ease-out motion-reduce:transition-none",
       )}
     >
-      <div className="flex h-14 items-center gap-2 border-b border-sidebar-border px-3">
-        <span className="flex size-8 shrink-0 items-center justify-center rounded-md border border-sidebar-border text-xs font-semibold text-primary-ink">
-          RH
-        </span>
+      <div
+        className={cn(
+          "flex h-14 items-center gap-2.5 border-b border-sidebar-border px-3",
+          !expanded && "justify-center px-0",
+        )}
+      >
+        <BrandMark className="size-8" />
         <span className={cn("truncate text-sm font-semibold", !expanded && "sr-only")}>
           RH System
         </span>
       </div>
+      {expanded ? (
+        <div className="px-2 pt-2">
+          <Link
+            to="/companies"
+            title={companyLabel(companyName, companyStatus)}
+            className="block rounded-xl bg-sidebar-accent px-3 py-2 text-sm leading-5 text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <span className="block">Empresa activa:</span>
+            <span className="block truncate font-semibold">
+              {companyLabel(companyName, companyStatus)}
+            </span>
+          </Link>
+        </div>
+      ) : null}
       <nav
         id="navegacion-modulos"
         aria-label="Módulos"
@@ -110,6 +133,19 @@ export function Sidebar() {
   );
 }
 
+function companyLabel(
+  companyName: string | null,
+  companyStatus: "loading" | "ready" | "error",
+) {
+  if (companyStatus === "loading") {
+    return "Cargando empresa…";
+  }
+  if (companyStatus === "error") {
+    return "Empresa no disponible";
+  }
+  return companyName ?? "Sin empresa activa";
+}
+
 function SidebarLink({ module, expanded }: { module: AppModule; expanded: boolean }) {
   const link = (
     <NavLink
@@ -117,24 +153,28 @@ function SidebarLink({ module, expanded }: { module: AppModule; expanded: boolea
       end={module.to === "/"}
       className={({ isActive }) =>
         cn(
-          "flex h-9 items-center gap-3 rounded-md px-3 text-sm text-sidebar-foreground",
+          "flex h-10 items-center gap-3 rounded-md px-3 text-sm text-sidebar-foreground transition-colors duration-[var(--motion-fast)]",
           !expanded && "justify-center px-0",
-          isActive
-            ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
-            : "hover:bg-sidebar-accent/70",
+          isActive ? "bg-primary-soft font-medium" : "hover:bg-sidebar-accent/70",
         )
       }
     >
-      <module.icon
-        className={cn(
-          "size-4 shrink-0",
-          module.implemented ? "text-primary-ink" : undefined,
-        )}
-        aria-hidden="true"
-      />
-      <span className={cn(expanded ? "min-w-0 flex-1 truncate text-left" : "sr-only")}>
-        {module.label}
-      </span>
+      {({ isActive }) => (
+        <>
+          <module.icon
+            className={cn(
+              "size-4 shrink-0",
+              isActive ? "text-foreground" : "text-muted-foreground",
+            )}
+            aria-hidden="true"
+          />
+          <span
+            className={cn(expanded ? "min-w-0 flex-1 truncate text-left" : "sr-only")}
+          >
+            {module.label}
+          </span>
+        </>
+      )}
     </NavLink>
   );
 

@@ -210,7 +210,9 @@ for (const viewport of viewports) {
 
       await page.goto("/#/companies");
       await expect(page.getByRole("heading", { name: "Empresas" })).toBeVisible();
-      await expect(page.getByRole("cell", { name: "DEMO-0001" })).toBeVisible();
+      await expect(
+        page.getByRole("article", { name: "Taller Norte" }).getByText("DEMO-0001"),
+      ).toBeVisible();
       await expectNoHorizontalOverflow(page);
       const create = page.getByRole("button", { name: "Nueva empresa" });
       await expect(create).toBeVisible();
@@ -244,13 +246,10 @@ test("edits only the legal name and keeps the stored trade name and tax id", asy
   await legalName.fill("Taller Norte Actualizado");
   await page.getByRole("button", { name: "Guardar cambios" }).click();
   await expect(page.getByRole("status")).toContainText("Se guardaron los cambios.");
-  await expect(
-    page.getByRole("cell", { name: "Taller Norte Actualizado", exact: true }),
-  ).toBeVisible();
-  await expect(page.getByRole("cell", { name: "Norte", exact: true })).toBeVisible();
-  await expect(
-    page.getByRole("cell", { name: "DEMO-0001", exact: true }),
-  ).toBeVisible();
+  const updated = page.getByRole("article", { name: "Taller Norte Actualizado" });
+  await expect(updated).toBeVisible();
+  await expect(updated.getByText("Norte", { exact: true })).toBeVisible();
+  await expect(updated.getByText("DEMO-0001", { exact: true })).toBeVisible();
 });
 
 function parseHex(hex: string) {
@@ -289,7 +288,8 @@ async function readPaint(page: Page) {
     const button = document.querySelector("main button");
     const card = document.querySelector("main .bg-card");
     const sidebar = document.querySelector("#navegacion");
-    const mark = document.querySelector("#navegacion span");
+    const mark = document.querySelector("[data-brand-petal='amethyst']");
+    const mintPetal = document.querySelector("[data-brand-petal='mint']");
     const textColors = [...document.querySelectorAll("body *")]
       .filter((element) => (element.textContent ?? "").trim().length > 0)
       .map((element) => rgb(getComputedStyle(element).color));
@@ -297,7 +297,8 @@ async function readPaint(page: Page) {
       body: rgb(getComputedStyle(document.body).backgroundColor),
       card: card ? rgb(getComputedStyle(card).backgroundColor) : null,
       sidebar: sidebar ? rgb(getComputedStyle(sidebar).backgroundColor) : null,
-      mark: mark ? rgb(getComputedStyle(mark).color) : null,
+      mark: mark ? rgb(getComputedStyle(mark).fill) : null,
+      mintPetal: mintPetal ? rgb(getComputedStyle(mintPetal).fill) : null,
       buttonBackground: button ? rgb(getComputedStyle(button).backgroundColor) : null,
       buttonText: button ? rgb(getComputedStyle(button).color) : null,
       fontFamily: getComputedStyle(document.body).fontFamily,
@@ -361,7 +362,8 @@ for (const theme of ["light", "dark"] as const) {
       theme === "light" ? "#7956B5" : "#B092D8",
       "primary ink",
     );
-    expectChannels(paint.mark, theme === "light" ? "#7956B5" : "#B092D8", "brand mark");
+    expectChannels(paint.mark, "#7956B5", "brand mark");
+    expectChannels(paint.mintPetal, "#65BFA8", "brand mint");
     expect(paint.fontFamily.toLowerCase()).toContain("plus jakarta sans");
     expect(paint.fontFamily.toLowerCase()).not.toContain("ibm plex");
     for (const weight of ["400", "500", "600", "700"]) {

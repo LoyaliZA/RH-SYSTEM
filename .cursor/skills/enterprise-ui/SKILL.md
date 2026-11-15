@@ -13,7 +13,7 @@ Si este procedimiento contradice la identidad oficial, manda la identidad y se c
 
 1. Lee la pantalla y los componentes que ya funcionan. No reemplaces un control solo por decoración.
 2. Separa **APROBADO**, **PROPUESTA** y **POR VERIFICAR**. No trates una propuesta como función existente. Confirma en el repositorio lo que está por verificar.
-3. No inventes un tablero bento ni tarjetas de empresa mientras las imágenes de composición no estén en el repositorio.
+3. Las referencias aprobadas están en `docs/design/references/`. Inicio sigue `03-inicio-bento` y Empresas sigue `01-seleccion-empresa`. El isotipo de `05-acceso` es el logo. No copies cifras, personas ni adornos de una sola pantalla.
 4. Conserva el CRUD de empresas, la persistencia y los comandos de Rust. Un cambio visual no justifica tocar SQLite ni las migraciones.
 5. No añadas módulos de recursos humanos. Los módulos en preparación siguen siendo un enlace a una página de «no implementado».
 6. La copia nueva va en español y nombra el rol, no el género. Los identificadores nuevos van en inglés.
