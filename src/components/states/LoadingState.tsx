@@ -7,7 +7,7 @@ export function LoadingState({ label }: LoadingStateProps) {
     <div
       role="status"
       aria-live="polite"
-      className="rounded-md border border-border bg-card px-5 py-8"
+      className="rounded-lg border border-border bg-card px-5 py-8 shadow-card"
     >
       <p className="text-base text-muted-foreground">{label}</p>
     </div>

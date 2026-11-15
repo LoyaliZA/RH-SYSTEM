@@ -47,11 +47,11 @@ export function Sidebar() {
       className={cn(
         "flex h-svh shrink-0 flex-col overflow-hidden border-r border-sidebar-border bg-sidebar text-sidebar-foreground",
         expanded ? "w-60" : "w-16",
-        "transition-[width] duration-200 ease-out motion-reduce:transition-none",
+        "transition-[width] duration-[var(--motion-panel)] ease-out motion-reduce:transition-none",
       )}
     >
       <div className="flex h-14 items-center gap-2 border-b border-sidebar-border px-3">
-        <span className="flex size-8 shrink-0 items-center justify-center rounded-md border border-sidebar-border text-xs font-semibold text-primary">
+        <span className="flex size-8 shrink-0 items-center justify-center rounded-md border border-sidebar-border text-xs font-semibold text-primary-ink">
           RH
         </span>
         <span className={cn("truncate text-sm font-semibold", !expanded && "sr-only")}>
@@ -128,7 +128,7 @@ function SidebarLink({ module, expanded }: { module: AppModule; expanded: boolea
       <module.icon
         className={cn(
           "size-4 shrink-0",
-          module.implemented ? "text-primary" : undefined,
+          module.implemented ? "text-primary-ink" : undefined,
         )}
         aria-hidden="true"
       />

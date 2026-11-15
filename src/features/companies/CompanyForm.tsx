@@ -76,7 +76,7 @@ export function CompanyForm({
       {formError ? (
         <p
           role="alert"
-          className="rounded-md border border-border px-3 py-2 text-sm text-destructive"
+          className="rounded-lg border border-border px-3 py-2 text-sm text-destructive"
         >
           {formError}
         </p>

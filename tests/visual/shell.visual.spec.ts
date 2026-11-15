@@ -253,6 +253,146 @@ test("edits only the legal name and keeps the stored trade name and tax id", asy
   ).toBeVisible();
 });
 
+function parseHex(hex: string) {
+  const value = hex.replace("#", "");
+  return [
+    Number.parseInt(value.slice(0, 2), 16),
+    Number.parseInt(value.slice(2, 4), 16),
+    Number.parseInt(value.slice(4, 6), 16),
+  ];
+}
+
+async function readPaint(page: Page) {
+  return page.evaluate(() => {
+    function rgb(color: string) {
+      const canvas = document.createElement("canvas");
+      canvas.width = 1;
+      canvas.height = 1;
+      const context = canvas.getContext("2d");
+      if (!context) {
+        return [0, 0, 0];
+      }
+      context.fillStyle = "#000";
+      context.fillStyle = color;
+      context.fillRect(0, 0, 1, 1);
+      const [red, green, blue] = context.getImageData(0, 0, 1, 1).data;
+      return [red ?? 0, green ?? 0, blue ?? 0];
+    }
+    function token(name: string) {
+      const probe = document.createElement("span");
+      probe.style.color = `var(${name})`;
+      document.body.append(probe);
+      const channels = rgb(getComputedStyle(probe).color);
+      probe.remove();
+      return channels;
+    }
+    const button = document.querySelector("main button");
+    const card = document.querySelector("main .bg-card");
+    const sidebar = document.querySelector("#navegacion");
+    const mark = document.querySelector("#navegacion span");
+    const textColors = [...document.querySelectorAll("body *")]
+      .filter((element) => (element.textContent ?? "").trim().length > 0)
+      .map((element) => rgb(getComputedStyle(element).color));
+    return {
+      body: rgb(getComputedStyle(document.body).backgroundColor),
+      card: card ? rgb(getComputedStyle(card).backgroundColor) : null,
+      sidebar: sidebar ? rgb(getComputedStyle(sidebar).backgroundColor) : null,
+      mark: mark ? rgb(getComputedStyle(mark).color) : null,
+      buttonBackground: button ? rgb(getComputedStyle(button).backgroundColor) : null,
+      buttonText: button ? rgb(getComputedStyle(button).color) : null,
+      fontFamily: getComputedStyle(document.body).fontFamily,
+      faces: [...document.fonts].map((font) => ({
+        family: font.family,
+        weight: font.weight,
+        status: font.status,
+      })),
+      resources: performance
+        .getEntriesByType("resource")
+        .map((entry) => entry.name)
+        .filter((name) => /font|woff|jakarta|plex/i.test(name)),
+      mint: token("--mint"),
+      amethyst: token("--rh-amethyst"),
+      primaryInk: token("--primary-ink"),
+      textColors,
+    };
+  });
+}
+
+function expectChannels(actual: number[] | null, hex: string, label: string) {
+  expect(actual, label).not.toBeNull();
+  const expected = parseHex(hex);
+  expect(actual?.[0], label).toBe(expected[0]);
+  expect(actual?.[1], label).toBe(expected[1]);
+  expect(actual?.[2], label).toBe(expected[2]);
+}
+
+for (const theme of ["light", "dark"] as const) {
+  test(`official colors, font, and contrast hold in ${theme}`, async ({ page }) => {
+    await page.route("**/*", (route) => {
+      const url = route.request().url();
+      if (url.startsWith("http://127.0.0.1:1420") || url.startsWith("data:")) {
+        return route.continue();
+      }
+      return route.abort();
+    });
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await installDesktop(page, theme);
+    await page.goto("/#/companies");
+    await expect(page.getByRole("heading", { name: "Empresas" })).toBeVisible();
+    await page.evaluate(async () => {
+      await Promise.all(
+        ["400", "500", "600", "700"].map((weight) =>
+          document.fonts.load(`${weight} 16px "Plus Jakarta Sans"`),
+        ),
+      );
+      await document.fonts.ready;
+    });
+    const paint = await readPaint(page);
+
+    expectChannels(paint.body, theme === "light" ? "#F6F5F8" : "#1D1725", "canvas");
+    expectChannels(paint.card, theme === "light" ? "#FFFFFF" : "#30283A", "surface");
+    expectChannels(paint.sidebar, theme === "light" ? "#EEEAF3" : "#282132", "sidebar");
+    expectChannels(paint.buttonBackground, "#7956B5", "primary button");
+    expectChannels(paint.buttonText, "#FFFFFF", "primary button text");
+    expectChannels(paint.mint, "#65BFA8", "mint token");
+    expectChannels(paint.amethyst, "#7956B5", "amethyst token");
+    expectChannels(
+      paint.primaryInk,
+      theme === "light" ? "#7956B5" : "#B092D8",
+      "primary ink",
+    );
+    expectChannels(paint.mark, theme === "light" ? "#7956B5" : "#B092D8", "brand mark");
+    expect(paint.fontFamily.toLowerCase()).toContain("plus jakarta sans");
+    expect(paint.fontFamily.toLowerCase()).not.toContain("ibm plex");
+    for (const weight of ["400", "500", "600", "700"]) {
+      expect(
+        paint.faces.some(
+          (face) =>
+            face.family.replaceAll('"', "").toLowerCase() === "plus jakarta sans" &&
+            face.weight === weight &&
+            face.status === "loaded",
+        ),
+        `weight ${weight}`,
+      ).toBe(true);
+    }
+    expect(paint.resources.some((name) => /ibm-plex/i.test(name))).toBe(false);
+    expect(
+      paint.resources.every(
+        (name) => name.startsWith("http://127.0.0.1:1420") || name.startsWith("data:"),
+      ),
+    ).toBe(true);
+    const mint = parseHex("#65BFA8");
+    const brand = parseHex("#7956B5");
+    for (const color of paint.textColors) {
+      expect(color).not.toEqual(mint);
+      if (theme === "dark") {
+        expect(color).not.toEqual(brand);
+      }
+    }
+    await expectTextContrast(page);
+  });
+}
+
 test("changes the active company from the dashboard selector", async ({ page }) => {
   await page.setViewportSize({ width: 1024, height: 768 });
   await installDesktop(page, "dark");

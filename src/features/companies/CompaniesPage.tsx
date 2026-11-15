@@ -126,7 +126,7 @@ export function CompaniesPage() {
       {pageError ? (
         <p
           role="alert"
-          className="rounded-md border border-border bg-card px-3 py-2 text-sm text-destructive"
+          className="rounded-lg border border-border bg-card px-3 py-2 text-sm text-destructive shadow-card"
         >
           {pageError}
         </p>
