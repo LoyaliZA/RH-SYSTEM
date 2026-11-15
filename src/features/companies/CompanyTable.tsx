@@ -7,6 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { cn } from "@/lib/utils";
 
 import type { Company } from "./types";
 
@@ -27,13 +28,14 @@ export function CompanyTable({
 }: CompanyTableProps) {
   return (
     <Table>
+      <caption className="sr-only">Empresas guardadas en este equipo</caption>
       <TableHeader>
         <TableRow>
           <TableHead>Razón social</TableHead>
           <TableHead>Nombre comercial</TableHead>
           <TableHead>Identificador fiscal</TableHead>
           <TableHead>Estado</TableHead>
-          <TableHead>Acciones</TableHead>
+          <TableHead className="text-right">Acciones</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -41,14 +43,22 @@ export function CompanyTable({
           <TableRow
             key={company.id}
             data-selected={selectedId === company.id ? "true" : undefined}
-            className={selectedId === company.id ? "bg-muted" : undefined}
+            className={cn(
+              selectedId === company.id ? "bg-accent" : "hover:bg-muted/70",
+            )}
           >
-            <TableCell className="font-medium">{company.legalName}</TableCell>
-            <TableCell>{company.tradeName ?? "—"}</TableCell>
-            <TableCell className="tabular-nums">{company.taxId ?? "—"}</TableCell>
-            <TableCell>{company.isActive ? "Activa" : "—"}</TableCell>
+            <TableCell className="max-w-64 font-medium whitespace-normal">
+              {company.legalName}
+            </TableCell>
+            <TableCell className="max-w-56 whitespace-normal">
+              {company.tradeName ?? <Missing label="Sin nombre comercial" />}
+            </TableCell>
+            <TableCell className="tabular-nums">
+              {company.taxId ?? <Missing label="Sin identificador" />}
+            </TableCell>
+            <TableCell>{company.isActive ? "Activa" : "Inactiva"}</TableCell>
             <TableCell>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex justify-end gap-2 whitespace-nowrap">
                 <Button
                   type="button"
                   variant="outline"
@@ -76,4 +86,8 @@ export function CompanyTable({
       </TableBody>
     </Table>
   );
+}
+
+function Missing({ label }: { label: string }) {
+  return <span className="text-muted-foreground">{label}</span>;
 }

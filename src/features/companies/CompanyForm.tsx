@@ -10,6 +10,7 @@ type CompanyFormProps = {
   fieldErrors: Partial<Record<CompanyField, string>>;
   formError: string | null;
   pending: boolean;
+  embedded?: boolean;
   onChange: (field: CompanyField, value: string) => void;
   onSubmit: () => void;
   onCancel?: () => void;
@@ -21,6 +22,7 @@ export function CompanyForm({
   fieldErrors,
   formError,
   pending,
+  embedded = false,
   onChange,
   onSubmit,
   onCancel,
@@ -36,7 +38,15 @@ export function CompanyForm({
         onSubmit();
       }}
     >
-      <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
+      {embedded ? null : (
+        <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
+      )}
+      {mode === "edit" ? (
+        <p className="text-sm text-muted-foreground">
+          El nombre comercial y el identificador fiscal se conservan si no los
+          modificas. Si los dejas vacíos, se borran.
+        </p>
+      ) : null}
       <Field
         id="legal-name"
         label="Razón social"
@@ -64,7 +74,10 @@ export function CompanyForm({
         hint="Letras, números y guiones. Sin datos personales reales."
       />
       {formError ? (
-        <p role="alert" className="text-sm text-destructive">
+        <p
+          role="alert"
+          className="rounded-md border border-border px-3 py-2 text-sm text-destructive"
+        >
           {formError}
         </p>
       ) : null}
@@ -117,6 +130,8 @@ function Field({
         id={id}
         value={value}
         disabled={disabled}
+        autoComplete="off"
+        spellCheck={id === "tax-id" ? false : undefined}
         aria-invalid={Boolean(error)}
         aria-describedby={describedBy || undefined}
         onChange={(event) => onChange(event.target.value)}

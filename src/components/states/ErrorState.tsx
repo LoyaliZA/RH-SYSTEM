@@ -12,11 +12,14 @@ export function ErrorState({
   onRetry,
 }: ErrorStateProps) {
   return (
-    <div role="alert" className="max-w-prose space-y-4 py-6">
-      <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
-      <p className="text-base text-muted-foreground">{message}</p>
+    <div
+      role="alert"
+      className="max-w-[68ch] rounded-md border border-border bg-card px-5 py-5"
+    >
+      <h2 className="text-lg font-semibold tracking-tight text-foreground">{title}</h2>
+      <p className="mt-2 text-base text-muted-foreground">{message}</p>
       {onRetry ? (
-        <Button type="button" variant="outline" onClick={onRetry}>
+        <Button type="button" variant="outline" className="mt-4" onClick={onRetry}>
           Reintentar
         </Button>
       ) : null}
