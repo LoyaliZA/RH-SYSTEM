@@ -68,6 +68,7 @@
   --sidebar-accent: #ffffff;
   --sidebar-accent-foreground: #251f30;
   --sidebar-border: #e7e2eb;
+  --primary-soft: color-mix(in srgb, var(--rh-amethyst) 18%, var(--sidebar));
   --elevation-card:
     0 1px 2px rgb(29 23 37 / 0.05), 0 10px 28px -16px rgb(29 23 37 / 0.16);
   --elevation-panel: -8px 0 24px -12px rgb(29 23 37 / 0.18);
@@ -90,7 +91,7 @@
   --primary-ink: #b092d8;
   --mint: var(--rh-mint);
   --mint-foreground: var(--rh-canvas-dark);
-  --mint-soft: #38404c;
+  --mint-soft: color-mix(in srgb, var(--rh-mint) 34%, var(--rh-surface-dark));
   --mint-soft-foreground: #f7f2fa;
   --secondary: #3a3144;
   --secondary-foreground: #f7f2fa;
@@ -124,6 +125,7 @@
   --sidebar-accent: var(--rh-surface-dark);
   --sidebar-accent-foreground: #f7f2fa;
   --sidebar-border: #44384e;
+  --primary-soft: color-mix(in srgb, #b092d8 24%, var(--sidebar));
   --elevation-card:
     0 1px 2px rgb(29 23 37 / 0.4), 0 12px 28px -18px rgb(29 23 37 / 0.7);
   --elevation-panel: -10px 0 28px -14px rgb(29 23 37 / 0.55);
@@ -141,6 +143,7 @@
   --color-primary-hover: var(--primary-hover);
   --color-primary-active: var(--primary-active);
   --color-primary-ink: var(--primary-ink);
+  --color-primary-soft: var(--primary-soft);
   --color-mint: var(--mint);
   --color-mint-foreground: var(--mint-foreground);
   --color-mint-soft: var(--mint-soft);
@@ -235,4 +238,76 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/*
+  Composición según docs/design/references/.
+  03 define el bento de inicio y 01 la cuadrícula de empresas.
+  No se copian cifras, personas ni adornos de una sola pantalla.
+*/
+.rh-main {
+  container-name: main;
+  container-type: inline-size;
+}
+
+.rh-bento,
+.rh-company-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: stretch;
+}
+
+@container main (min-width: 42rem) {
+  .rh-bento {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+
+  .rh-span-lead {
+    grid-column: span 7;
+  }
+
+  .rh-span-aside {
+    grid-column: span 5;
+  }
+
+  .rh-span-band {
+    grid-column: span 12;
+  }
+
+  .rh-company-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17.5rem), 1fr));
+  }
+}
+
+@keyframes rh-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rh-enter {
+  animation: rh-enter var(--motion-normal) cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes rh-drawer {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rh-drawer {
+  animation: rh-drawer var(--motion-panel) cubic-bezier(0.22, 1, 0.36, 1) both;
 }

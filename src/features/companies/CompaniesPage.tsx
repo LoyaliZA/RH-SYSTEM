@@ -1,3 +1,4 @@
+import { Plus } from "lucide-react";
 import { useState } from "react";
 
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -16,8 +17,8 @@ import {
 } from "@/components/ui/sheet";
 
 import { useCompanies } from "./company-context";
+import { CompanyCard } from "./CompanyCard";
 import { CompanyForm } from "./CompanyForm";
-import { CompanyTable } from "./CompanyTable";
 import { formValuesFromCompany, toCompanyInput } from "./submit";
 import {
   emptyCompanyForm,
@@ -27,6 +28,41 @@ import {
 } from "./types";
 
 type PanelMode = "closed" | "create" | "edit";
+
+function CompanyBoard({
+  companies,
+  pending,
+  selectedId,
+  onEdit,
+  onActivate,
+}: {
+  companies: Company[];
+  pending: boolean;
+  selectedId: string | null;
+  onEdit: (company: Company) => void;
+  onActivate: (company: Company) => void;
+}) {
+  const ordered = [
+    ...companies.filter((company) => company.isActive),
+    ...companies.filter((company) => !company.isActive),
+  ];
+
+  return (
+    <ul className="rh-company-grid">
+      {ordered.map((company) => (
+        <li key={company.id} className="h-full min-w-0">
+          <CompanyCard
+            company={company}
+            pending={pending}
+            selected={selectedId === company.id}
+            onEdit={onEdit}
+            onActivate={onActivate}
+          />
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 export function CompaniesPage() {
   const { status, companies, error, pending, reload, create, update, activate } =
@@ -116,6 +152,7 @@ export function CompaniesPage() {
         actions={
           status === "ready" ? (
             <Button type="button" onClick={openCreate} disabled={pending}>
+              <Plus aria-hidden="true" />
               Nueva empresa
             </Button>
           ) : null
@@ -143,7 +180,7 @@ export function CompaniesPage() {
         />
       ) : null}
       {status === "ready" && companies.length > 0 ? (
-        <CompanyTable
+        <CompanyBoard
           companies={companies}
           pending={pending}
           selectedId={editingId}

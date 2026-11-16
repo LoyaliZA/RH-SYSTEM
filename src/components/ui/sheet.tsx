@@ -18,7 +18,7 @@ function SheetContent({
       <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-foreground/20" />
       <DialogPrimitive.Content
         className={cn(
-          "fixed top-0 right-0 z-50 flex h-svh w-full flex-col border-l border-border bg-card text-card-foreground shadow-panel outline-none min-[1024px]:max-w-[24rem]",
+          "rh-drawer fixed top-0 right-0 z-50 flex h-svh w-full flex-col border-l border-border bg-card text-card-foreground shadow-panel outline-none min-[1024px]:max-w-[24rem] min-[1024px]:rounded-l-lg",
           className,
         )}
         {...props}
@@ -26,7 +26,7 @@ function SheetContent({
         {children}
         <DialogPrimitive.Close
           aria-label="Cerrar"
-          className="absolute top-3 right-3 inline-flex size-8 items-center justify-center rounded-md text-foreground hover:bg-muted"
+          className="absolute top-3 right-3 inline-flex size-8 items-center justify-center rounded-md text-foreground transition-colors duration-[var(--motion-fast)] hover:bg-muted motion-reduce:transition-none"
         >
           <X className="size-4" aria-hidden="true" />
         </DialogPrimitive.Close>

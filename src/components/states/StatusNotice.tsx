@@ -1,17 +1,22 @@
 import { Check } from "lucide-react";
 
+import { Card } from "@/components/ui/card";
+import { IconWell } from "@/components/ui/icon-well";
+
 type StatusNoticeProps = {
   children: string;
 };
 
 export function StatusNotice({ children }: StatusNoticeProps) {
   return (
-    <div
+    <Card
       role="status"
-      className="flex items-start gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground shadow-card"
+      className="flex items-start gap-3 px-4 py-3 text-sm text-foreground"
     >
-      <Check className="mt-0.5 size-4 shrink-0 text-success" aria-hidden="true" />
-      <p>{children}</p>
-    </div>
+      <IconWell tone="mint">
+        <Check aria-hidden="true" />
+      </IconWell>
+      <p className="pt-1.5">{children}</p>
+    </Card>
   );
 }

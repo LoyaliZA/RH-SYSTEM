@@ -30,7 +30,7 @@ export function AppShell({
         >
           Saltar al contenido
         </a>
-        <Sidebar />
+        <Sidebar companyName={companyName} companyStatus={companyStatus} />
         <div className="flex min-w-0 flex-1 flex-col">
           <Header
             companyName={companyName}
@@ -41,7 +41,7 @@ export function AppShell({
           <main
             id="contenido"
             tabIndex={-1}
-            className="min-h-0 flex-1 overflow-auto px-4 py-5 outline-none md:px-6 md:py-6"
+            className="rh-main min-h-0 flex-1 overflow-auto px-4 py-5 outline-none md:px-6 md:py-6"
           >
             {children}
           </main>
