@@ -1,5 +1,9 @@
 # RH System
 
+## Plan maestro de desarrollo
+
+El estado de las entregas funcionales, sus dependencias y el horizonte completo de evolución están en [ROADMAP.md](ROADMAP.md). La **Entrega 1.5** documenta este plan, sin dar por terminada la Entrega 1 ni habilitar módulos pendientes. Consulta ese archivo y los PR recientes antes de planificar nuevas fases.
+
 Sistema de gestión de recursos humanos para escritorio. Esta fase deja el cascarón navegable y el alta, la consulta y la actualización de empresas en SQLite. El resto de los módulos todavía no está implementado.
 
 ## Requisitos

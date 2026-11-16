@@ -1,5 +1,9 @@
 # AGENTS.md
 
+## Roadmap y estado del proyecto
+
+La fuente única del roadmap funcional es [ROADMAP.md](ROADMAP.md). Antes de proponer o implementar una fase, leerlo y comprobar el estado actual de `main` y sus Pull Requests. Distinguir fases visuales de entregas funcionales; no considerar un módulo implementado solo por su pantalla o por un reporte de Cursor. Actualizar `ROADMAP.md` cuando cambie el estado verificable de una entrega.
+
 Convenciones para quien modifique RH System. La arquitectura completa está en [docs/architecture.md](docs/architecture.md) y el entorno local o de Cloud en [docs/development.md](docs/development.md).
 
 ## Arquitectura
