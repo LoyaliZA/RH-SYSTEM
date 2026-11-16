@@ -26,19 +26,19 @@ RH System es un sistema de gestión empresarial y Recursos Humanos, inicialmente
 
 **Base tecnológica elegida:**
 
-| Capa | Decisión |
-| --- | --- |
-| App Windows | Tauri 2 |
-| Interfaz | React, TypeScript, Vite, Tailwind CSS y componentes reutilizables |
-| Núcleo y casos de uso | Rust, comandos Tauri y repositorios |
-| Persistencia actual | SQLite local mediante rusqlite; sin servidor de base de datos instalado |
-| Arquitectura | Local-First, preparada para evolución híbrida |
-| Modelo futuro | Servidor como fuente oficial; API central y PostgreSQL |
-| Trabajo offline futuro | Sincronización con idempotencia, versiones y resolución explícita de conflictos |
-| Archivos | Documentos locales administrados por la aplicación; repositorio central al evolucionar |
-| Respaldo | Copias locales recuperables; nube optativa (Drive, OneDrive, Dropbox, etc.) |
-| Distribución | Instalador Windows; pruebas/compilación automatizadas en GitHub Actions |
-| Desarrollo | Cursor Cloud, PR por alcance y revisión antes de fusionar |
+| Capa                   | Decisión                                                                               |
+| ---------------------- | -------------------------------------------------------------------------------------- |
+| App Windows            | Tauri 2                                                                                |
+| Interfaz               | React, TypeScript, Vite, Tailwind CSS y componentes reutilizables                      |
+| Núcleo y casos de uso  | Rust, comandos Tauri y repositorios                                                    |
+| Persistencia actual    | SQLite local mediante rusqlite; sin servidor de base de datos instalado                |
+| Arquitectura           | Local-First, preparada para evolución híbrida                                          |
+| Modelo futuro          | Servidor como fuente oficial; API central y PostgreSQL                                 |
+| Trabajo offline futuro | Sincronización con idempotencia, versiones y resolución explícita de conflictos        |
+| Archivos               | Documentos locales administrados por la aplicación; repositorio central al evolucionar |
+| Respaldo               | Copias locales recuperables; nube optativa (Drive, OneDrive, Dropbox, etc.)            |
+| Distribución           | Instalador Windows; pruebas/compilación automatizadas en GitHub Actions                |
+| Desarrollo             | Cursor Cloud, PR por alcance y revisión antes de fusionar                              |
 
 **Decisiones funcionales del MVP:**
 
@@ -69,24 +69,24 @@ Los prototipos visuales no habilitan funciones que aún no existan: **no autenti
 
 ### 4.1. Comprobado en GitHub (corte indicado)
 
-| Evidencia | Estado | Alcance |
-| --- | --- | --- |
-| [PR #1](https://github.com/LoyaliZA/RH-SYSTEM/pull/1) | COMPLETADA | Bootstrap Tauri, React, Rust, SQLite y CRUD inicial de empresas |
-| [PR #2](https://github.com/LoyaliZA/RH-SYSTEM/pull/2) | COMPLETADA | Primer shell, flujo de empresas, reglas y pruebas visuales |
-| [PR #3](https://github.com/LoyaliZA/RH-SYSTEM/pull/3) | COMPLETADA | Tokens y tipografía del Design System v1.0 |
-| [PR #4](https://github.com/LoyaliZA/RH-SYSTEM/pull/4) | COMPLETADA | Composición Bento, shell y tarjetas de empresas; CI del PR aprobado |
-| main | COMPROBADO | Commit 20715933451de3f776481c8b961a3c3c5879392d; todavía no hay rutas de login ni selector de empresas independientes en el punto de entrada verificado |
+| Evidencia                                             | Estado     | Alcance                                                                                                                                                 |
+| ----------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [PR #1](https://github.com/LoyaliZA/RH-SYSTEM/pull/1) | COMPLETADA | Bootstrap Tauri, React, Rust, SQLite y CRUD inicial de empresas                                                                                         |
+| [PR #2](https://github.com/LoyaliZA/RH-SYSTEM/pull/2) | COMPLETADA | Primer shell, flujo de empresas, reglas y pruebas visuales                                                                                              |
+| [PR #3](https://github.com/LoyaliZA/RH-SYSTEM/pull/3) | COMPLETADA | Tokens y tipografía del Design System v1.0                                                                                                              |
+| [PR #4](https://github.com/LoyaliZA/RH-SYSTEM/pull/4) | COMPLETADA | Composición Bento, shell y tarjetas de empresas; CI del PR aprobado                                                                                     |
+| main                                                  | COMPROBADO | Commit 20715933451de3f776481c8b961a3c3c5879392d; todavía no hay rutas de login ni selector de empresas independientes en el punto de entrada verificado |
 
 El repositorio incluye componentes compartidos, documentación de diseño, pruebas de React/Rust y un workflow de instalador NSIS. **Compilar un instalador no significa haber verificado su instalación gráfica y conservación de datos en Windows.**
 
 ### 4.2. Reportado desde la otra conversación: no confundir con main
 
-| Etiqueta visual | Estado | Observación |
-| --- | --- | --- |
-| B-2 | REPORTADA / parcialmente reflejada por PR #4 | Refinamiento de identidad, proporciones y componentes |
-| C-1 | REPORTADA | Auditoría de login: sin autenticación, usuarios persistidos, sesiones, roles o permisos efectivos |
-| C-2 | REPORTADA, no confirmada en main | Bienvenida, selección independiente de empresas, navegación de acceso, tema y responsive; Cursor reportó pruebas 22/22 y 18/18 |
-| C-3 | PLANIFICADA/REPORTADA, no confirmada en main | Refinamiento de acceso, campos visuales deshabilitados, animaciones/capturas; verificar integración antes de declararla lista |
+| Etiqueta visual | Estado                                       | Observación                                                                                                                    |
+| --------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| B-2             | REPORTADA / parcialmente reflejada por PR #4 | Refinamiento de identidad, proporciones y componentes                                                                          |
+| C-1             | REPORTADA                                    | Auditoría de login: sin autenticación, usuarios persistidos, sesiones, roles o permisos efectivos                              |
+| C-2             | REPORTADA, no confirmada en main             | Bienvenida, selección independiente de empresas, navegación de acceso, tema y responsive; Cursor reportó pruebas 22/22 y 18/18 |
+| C-3             | PLANIFICADA/REPORTADA, no confirmada en main | Refinamiento de acceso, campos visuales deshabilitados, animaciones/capturas; verificar integración antes de declararla lista  |
 
 El trabajo visual C-2/C-3 puede continuar por su carril, pero **no cuenta como autenticación implementada**. Antes de trabajar sobre una rama o PR posterior, consultar GitHub de nuevo.
 
@@ -100,16 +100,16 @@ El trabajo visual C-2/C-3 puede continuar por su carril, pero **no cuenta como a
 
 Las seis entregas originales se conservan. La entrega 0 es el bootstrap previo; la 1.5 es una entrega documental intermedia y **no cierra** los pendientes de la entrega 1.
 
-| ID | Entrega | Estado al corte | Resultado verificable |
-| --- | --- | --- | --- |
-| **F0** | Bootstrap técnico | COMPLETADA | Tauri, React, Rust, SQLite, CRUD de prueba e instalador compilable |
-| **F1** | Plataforma y seguridad | PARCIAL | Organización multiempresa, sucursales, departamentos, usuarios, autenticación, roles/permisos, auditoría y respaldo local básico |
-| **F1.5** | Roadmap maestro y trazabilidad | DOCUMENTACIÓN EN PREPARACIÓN | Plan completo versionado, estado verificable, nomenclatura y dependencias publicados en el repositorio |
-| **F2** | Gestión del personal | PENDIENTE | Personas, expedientes, puestos, relaciones laborales, adscripciones, salarios históricos y consulta |
-| **F3** | Ciclo laboral y documentos | PENDIENTE | Altas, bajas, reingresos, promociones, traslados, contratos y versiones de archivos |
-| **F4** | Operación diaria de RH | PENDIENTE | Calendarios, turnos, asistencia manual/importada, incidencias, vacaciones, permisos y autorizaciones |
-| **F5** | Prenómina y analítica | PENDIENTE | Cortes y conceptos, consolidación, revisiones, exportación y reportes con datos auténticos |
-| **F6** | Estabilización del MVP | PENDIENTE | Seguridad integral, copias cifradas, recuperación probada, QA, actualizaciones y piloto controlado |
+| ID       | Entrega                        | Estado al corte              | Resultado verificable                                                                                                            |
+| -------- | ------------------------------ | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| **F0**   | Bootstrap técnico              | COMPLETADA                   | Tauri, React, Rust, SQLite, CRUD de prueba e instalador compilable                                                               |
+| **F1**   | Plataforma y seguridad         | PARCIAL                      | Organización multiempresa, sucursales, departamentos, usuarios, autenticación, roles/permisos, auditoría y respaldo local básico |
+| **F1.5** | Roadmap maestro y trazabilidad | DOCUMENTACIÓN EN PREPARACIÓN | Plan completo versionado, estado verificable, nomenclatura y dependencias publicados en el repositorio                           |
+| **F2**   | Gestión del personal           | PENDIENTE                    | Personas, expedientes, puestos, relaciones laborales, adscripciones, salarios históricos y consulta                              |
+| **F3**   | Ciclo laboral y documentos     | PENDIENTE                    | Altas, bajas, reingresos, promociones, traslados, contratos y versiones de archivos                                              |
+| **F4**   | Operación diaria de RH         | PENDIENTE                    | Calendarios, turnos, asistencia manual/importada, incidencias, vacaciones, permisos y autorizaciones                             |
+| **F5**   | Prenómina y analítica          | PENDIENTE                    | Cortes y conceptos, consolidación, revisiones, exportación y reportes con datos auténticos                                       |
+| **F6**   | Estabilización del MVP         | PENDIENTE                    | Seguridad integral, copias cifradas, recuperación probada, QA, actualizaciones y piloto controlado                               |
 
 ### F1 — Plataforma y seguridad (aún no cerrada)
 
@@ -157,17 +157,17 @@ Pruebas integrales y de regresión; seguridad y privacidad; restauración verifi
 
 Se registran todas las líneas de evolución discutidas, pero no todas están aprobadas para programación. La numeración **E7–E15 es orientativa** y podrá reordenarse mediante decisión documentada una vez concluido el MVP; no altera F0–F6.
 
-| Horizonte | Etapa futura | Alcance tentativo | Estado |
-| --- | --- | --- | --- |
-| **E7** | Servidor multiusuario | API central autenticada, PostgreSQL, autorización del lado servidor, concurrencia, migración de datos y repositorio documental central | EVOLUCIÓN PREVISTA |
-| **E8** | Sincronización híbrida offline | Caché local, cola de operaciones, UUID, versiones, idempotencia, resolución de conflictos por dominio, reconexión | EVOLUCIÓN PREVISTA |
-| **E9** | Respaldo en nube y recuperación avanzada | Adaptadores Drive/OneDrive/Dropbox; OAuth o carpetas sincronizadas; cifrado, retención, versiones, integridad, recuperación entre equipos | EVOLUCIÓN PREVISTA |
-| **E10** | Integraciones operativas | Adaptadores directos a relojes checadores y otros sistemas externos, notificaciones y automatización de importaciones | OPCIONAL / POR DEFINIR |
-| **E11** | RH avanzado y talento | Reclutamiento, onboarding, capacitación, objetivos, evaluaciones, desempeño y desarrollo | OPCIONAL / POR DEFINIR |
-| **E12** | Autoservicio | Acceso de empleados y responsables, solicitudes, consultas, autorizaciones y experiencia por rol | OPCIONAL / FUERA DEL MVP |
-| **E13** | Nómina especializada México | Reglas fiscales/laborales versionadas, cálculo completo, CFDI, timbrado, integración fiscal y dispersión (si se aprueba) | OPCIONAL / ALTO CONTROL |
-| **E14** | Expansión empresarial / ERP modular | Activos y resguardos, inventarios, compras, gastos/presupuestos, mantenimiento, proyectos y eventualmente finanzas/operaciones | VISIÓN FUTURA |
-| **E15** | Plataformas y ecosistema | Distribución macOS/Linux, eventual versión web, API pública/SDK e integraciones adicionales según necesidad | VISIÓN FUTURA |
+| Horizonte | Etapa futura                             | Alcance tentativo                                                                                                                         | Estado                   |
+| --------- | ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| **E7**    | Servidor multiusuario                    | API central autenticada, PostgreSQL, autorización del lado servidor, concurrencia, migración de datos y repositorio documental central    | EVOLUCIÓN PREVISTA       |
+| **E8**    | Sincronización híbrida offline           | Caché local, cola de operaciones, UUID, versiones, idempotencia, resolución de conflictos por dominio, reconexión                         | EVOLUCIÓN PREVISTA       |
+| **E9**    | Respaldo en nube y recuperación avanzada | Adaptadores Drive/OneDrive/Dropbox; OAuth o carpetas sincronizadas; cifrado, retención, versiones, integridad, recuperación entre equipos | EVOLUCIÓN PREVISTA       |
+| **E10**   | Integraciones operativas                 | Adaptadores directos a relojes checadores y otros sistemas externos, notificaciones y automatización de importaciones                     | OPCIONAL / POR DEFINIR   |
+| **E11**   | RH avanzado y talento                    | Reclutamiento, onboarding, capacitación, objetivos, evaluaciones, desempeño y desarrollo                                                  | OPCIONAL / POR DEFINIR   |
+| **E12**   | Autoservicio                             | Acceso de empleados y responsables, solicitudes, consultas, autorizaciones y experiencia por rol                                          | OPCIONAL / FUERA DEL MVP |
+| **E13**   | Nómina especializada México              | Reglas fiscales/laborales versionadas, cálculo completo, CFDI, timbrado, integración fiscal y dispersión (si se aprueba)                  | OPCIONAL / ALTO CONTROL  |
+| **E14**   | Expansión empresarial / ERP modular      | Activos y resguardos, inventarios, compras, gastos/presupuestos, mantenimiento, proyectos y eventualmente finanzas/operaciones            | VISIÓN FUTURA            |
+| **E15**   | Plataformas y ecosistema                 | Distribución macOS/Linux, eventual versión web, API pública/SDK e integraciones adicionales según necesidad                               | VISIÓN FUTURA            |
 
 **No implica cronología rígida:** E9 (respaldos nube) puede habilitarse antes de E7 si es respaldo de copias cerradas y cifradas; E10 puede adelantarse si existe necesidad de un checador; E12 depende de autorización y, en general, de un servidor central. E13 requiere validación jurídica/fiscal y pruebas especializadas. Nunca confundir sincronización de respaldos con edición concurrente multiusuario.
 
@@ -243,8 +243,8 @@ Para toda entrega y PR:
 
 ## 11. Historial de decisiones y actualizaciones
 
-| Fecha | Revisión | Motivo |
-| --- | --- | --- |
+| Fecha      | Revisión   | Motivo                                                                                          |
+| ---------- | ---------- | ----------------------------------------------------------------------------------------------- |
 | 2026-11-15 | 1.0 / F1.5 | Consolidación documental del MVP original y horizonte post-MVP; estados basados en main 2071593 |
 
 ---
