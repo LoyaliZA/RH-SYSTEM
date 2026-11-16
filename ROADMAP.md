@@ -93,8 +93,9 @@ El trabajo visual C-2/C-3 puede continuar por su carril, pero **no cuenta como a
 ### 4.3. Estado funcional real
 
 - **Existe:** instalación de proyecto, capas Rust/React, persistencia SQLite, migración inicial, alta/listado/edición/activación de empresas y shell.
-- **No confirmado como implementado:** sucursales, departamentos, cuentas y sesiones reales, roles/permisos, auditoría de negocio, respaldo/restauración, expedientes, contratos, movimientos, checadas, vacaciones, prenómina y reportes operativos.
-- La empresa activa que hoy selecciona el usuario es una **preferencia**, no un límite de autorización. No manejar datos reales de empleados con esta protección incompleta.
+- **En esta rama, no fusionado:** F2.1 núcleo de expedientes sintéticos (persona y expediente por empresa, sin relación laboral completa). Ver sección F2.1.
+- **No confirmado como implementado:** sucursales, departamentos, cuentas y sesiones reales, roles/permisos, auditoría de negocio, respaldo/restauración, contratos, movimientos, checadas, vacaciones, prenómina y reportes operativos.
+- La empresa activa que hoy selecciona el usuario es una **preferencia**, no un límite de autorización. No manejar datos reales de empleados con esta protección incompleta. F2.1 bloquea las operaciones de personal en compilaciones de producción.
 
 ## 5. Roadmap funcional original del MVP (mantener el orden)
 
@@ -105,7 +106,7 @@ Las seis entregas originales se conservan. La entrega 0 es el bootstrap previo; 
 | **F0**   | Bootstrap técnico              | COMPLETADA                   | Tauri, React, Rust, SQLite, CRUD de prueba e instalador compilable                                                               |
 | **F1**   | Plataforma y seguridad         | PARCIAL                      | Organización multiempresa, sucursales, departamentos, usuarios, autenticación, roles/permisos, auditoría y respaldo local básico |
 | **F1.5** | Roadmap maestro y trazabilidad | DOCUMENTACIÓN EN PREPARACIÓN | Plan completo versionado, estado verificable, nomenclatura y dependencias publicados en el repositorio                           |
-| **F2**   | Gestión del personal           | PENDIENTE                    | Personas, expedientes, puestos, relaciones laborales, adscripciones, salarios históricos y consulta                              |
+| **F2**   | Gestión del personal           | PARCIAL (F2.1 no fusionada)  | Personas y expedientes sintéticos; faltan puestos, relación laboral, adscripciones y salarios históricos                         |
 | **F3**   | Ciclo laboral y documentos     | PENDIENTE                    | Altas, bajas, reingresos, promociones, traslados, contratos y versiones de archivos                                              |
 | **F4**   | Operación diaria de RH         | PENDIENTE                    | Calendarios, turnos, asistencia manual/importada, incidencias, vacaciones, permisos y autorizaciones                             |
 | **F5**   | Prenómina y analítica          | PENDIENTE                    | Cortes y conceptos, consolidación, revisiones, exportación y reportes con datos auténticos                                       |
@@ -130,6 +131,16 @@ Criterio de cierre: PR documental revisado y fusionado; enlaces accesibles desde
 Personas y expediente por empresa (no duplicar datos entre empresas por CURP/RFC); número de empleado, contactos, identificadores, estados, búsqueda; catálogo de puestos; relación laboral separada de persona/expediente; historial de asignaciones, salarios, vigencias y reingresos. Permisos por campo para datos sensibles. La primera fase debe trabajar con empresas ficticias y datos sintéticos.
 
 **Dependencia:** F1 para autorización, aislamiento y respaldo antes del uso con datos reales. El análisis funcional, diseño lógico y pruebas ficticias se pueden preparar antes, sin saltarse los controles.
+
+#### F2.1 — Núcleo de empleados y expedientes (esta rama)
+
+**Estado en esta rama:** PARCIAL / PROPUESTA de cierre de F2.1, **no fusionada**, **no cierra F2**. F2.2 y el resto de la Entrega 2 quedan fuera.
+
+**Hecho en el código de esta rama:** persona y expediente con `company_id`; identificador interno estable; número de empleado único por empresa; nombre, apellidos y estado administrativo; alta, listado, búsqueda, consulta y edición persistidos; filtro y validación de empresa en Rust; migración incremental `002` sobre bases existentes sin perder empresas ni sembrar expedientes; bloqueo de operaciones de personal en compilaciones de producción; interfaz de listado y expediente con el Design System existente.
+
+**Pendiente para F2:** puestos, relación laboral y sus procesos, adscripciones, salarios históricos, contactos, identificadores fiscales personales, permisos por campo y datos reales.
+
+**Criterio de F2.1:** crear, consultar, buscar y editar expedientes ficticios persistentes, aislados por empresa, listos para puestos e historial después. No habilitar datos personales reales hasta F1.
 
 ### F3 — Ciclo laboral y documentos
 
@@ -220,7 +231,7 @@ Para toda entrega y PR:
 
 ## 9. Puertas de avance y criterio para F2
 
-**Situación al corte:** F1 sigue PARCIAL. El siguiente hito de documentación es F1.5. Después se desea trabajar en F2, pero no debemos interpretar ese deseo como autorización para cargar expedientes reales sin protección.
+**Situación al corte de esta rama:** F1 sigue PARCIAL. F1.5 está documentada. F2.1 añade expedientes sintéticos en desarrollo y los bloquea en producción. Eso **no** autoriza cargar expedientes reales ni da por cerrada F2.
 
 **Antes de usar información real de RH:** autenticación y autorización efectiva, aislamiento de empresa en operaciones de Rust, auditoría mínima, cifrado/protección aplicable, respaldo verificable y revisión de privacidad. El diseño de dominio, prototipos y pruebas con datos ficticios de F2 pueden prepararse mientras se concluye F1, si se deja explícita esa condición.
 
@@ -246,7 +257,8 @@ Para toda entrega y PR:
 | Fecha      | Revisión   | Motivo                                                                                          |
 | ---------- | ---------- | ----------------------------------------------------------------------------------------------- |
 | 2026-11-15 | 1.0 / F1.5 | Consolidación documental del MVP original y horizonte post-MVP; estados basados en main 2071593 |
+| 2026-11-16 | F2.1       | Núcleo de persona/expediente sintético en esta rama; F2 permanece incompleta; sin merge         |
 
 ---
 
-**Alcance de esta entrega:** solo documentación. La próxima actividad funcional requiere revisión de prerequisitos y decisión explícita sobre cómo concluir F1 sin duplicar el trabajo ya hecho.
+**Alcance de F2.1:** núcleo de expedientes sintéticos, aislados por empresa, para revisión. No fusionar desde este documento. No habilita F2.2 ni datos personales reales.

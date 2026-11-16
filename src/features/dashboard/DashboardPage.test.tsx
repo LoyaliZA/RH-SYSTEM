@@ -68,6 +68,10 @@ describe("DashboardPage", () => {
       "href",
       "/modules/vacations",
     );
+    expect(screen.getByRole("link", { name: /Expedientes/ })).toHaveAttribute(
+      "href",
+      "/files",
+    );
   });
 
   it("activates the company chosen in the selector", async () => {

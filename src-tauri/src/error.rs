@@ -8,6 +8,18 @@ pub enum AppError {
     TradeNameTooLong,
     TaxIdInvalid,
     CompanyNotFound,
+    ActiveCompanyRequired,
+    GivenNameRequired,
+    GivenNameTooLong,
+    FamilyNameRequired,
+    FamilyNameTooLong,
+    EmployeeNumberRequired,
+    EmployeeNumberTooLong,
+    EmployeeNumberInvalid,
+    DuplicateEmployeeNumber,
+    AdministrativeStatusInvalid,
+    PersonnelFileNotFound,
+    PersonnelDisabledInProduction,
     ForeignKeysDisabled,
     Migration(String),
     Database(String),
@@ -22,6 +34,18 @@ impl AppError {
             Self::TradeNameTooLong => "trade_name_too_long",
             Self::TaxIdInvalid => "tax_id_invalid",
             Self::CompanyNotFound => "company_not_found",
+            Self::ActiveCompanyRequired => "active_company_required",
+            Self::GivenNameRequired => "given_name_required",
+            Self::GivenNameTooLong => "given_name_too_long",
+            Self::FamilyNameRequired => "family_name_required",
+            Self::FamilyNameTooLong => "family_name_too_long",
+            Self::EmployeeNumberRequired => "employee_number_required",
+            Self::EmployeeNumberTooLong => "employee_number_too_long",
+            Self::EmployeeNumberInvalid => "employee_number_invalid",
+            Self::DuplicateEmployeeNumber => "duplicate_employee_number",
+            Self::AdministrativeStatusInvalid => "administrative_status_invalid",
+            Self::PersonnelFileNotFound => "personnel_file_not_found",
+            Self::PersonnelDisabledInProduction => "personnel_disabled_in_production",
             Self::ForeignKeysDisabled => "foreign_keys_disabled",
             Self::Migration(_) => "migration",
             Self::Database(_) => "database",
@@ -38,6 +62,34 @@ impl AppError {
                 "El identificador fiscal solo puede incluir letras, números y guiones, con un máximo de 32 caracteres.".to_string()
             }
             Self::CompanyNotFound => "No se encontró la empresa.".to_string(),
+            Self::ActiveCompanyRequired => {
+                "No hay una empresa activa. Cree o active una empresa antes de operar expedientes."
+                    .to_string()
+            }
+            Self::GivenNameRequired => "El nombre es obligatorio.".to_string(),
+            Self::GivenNameTooLong => "El nombre supera 80 caracteres.".to_string(),
+            Self::FamilyNameRequired => "Los apellidos son obligatorios.".to_string(),
+            Self::FamilyNameTooLong => "Los apellidos superan 120 caracteres.".to_string(),
+            Self::EmployeeNumberRequired => "El número de empleado es obligatorio.".to_string(),
+            Self::EmployeeNumberTooLong => {
+                "El número de empleado supera 32 caracteres.".to_string()
+            }
+            Self::EmployeeNumberInvalid => {
+                "El número de empleado solo puede incluir letras, números y guiones.".to_string()
+            }
+            Self::DuplicateEmployeeNumber => {
+                "Ya existe un expediente con ese número de empleado en la empresa activa."
+                    .to_string()
+            }
+            Self::AdministrativeStatusInvalid => {
+                "El estado administrativo no es válido.".to_string()
+            }
+            Self::PersonnelFileNotFound => {
+                "No se encontró el expediente en la empresa activa.".to_string()
+            }
+            Self::PersonnelDisabledInProduction => {
+                "Las operaciones de personal no están disponibles en compilaciones de producción mientras falten autenticación y autorización. Use una compilación de desarrollo con datos sintéticos.".to_string()
+            }
             Self::ForeignKeysDisabled => {
                 "La base de datos no tiene las claves foráneas activas.".to_string()
             }

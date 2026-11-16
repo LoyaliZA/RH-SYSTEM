@@ -12,6 +12,8 @@ import { CompanyProvider } from "@/features/companies/company-context";
 import { CompaniesPage } from "@/features/companies/CompaniesPage";
 import { DashboardPage } from "@/features/dashboard/DashboardPage";
 import { PlaceholderPage } from "@/features/modules/PlaceholderPage";
+import { PersonnelFilePage } from "@/features/personnel/PersonnelFilePage";
+import { PersonnelFilesPage } from "@/features/personnel/PersonnelFilesPage";
 
 import "./index.css";
 
@@ -24,6 +26,8 @@ createRoot(document.getElementById("root") as HTMLElement).render(
             <Route element={<App />}>
               <Route index element={<DashboardPage />} />
               <Route path="companies" element={<CompaniesPage />} />
+              <Route path="files" element={<PersonnelFilesPage />} />
+              <Route path="files/:fileId" element={<PersonnelFilePage />} />
               <Route path="modules/:moduleId" element={<PlaceholderPage />} />
             </Route>
           </Routes>
