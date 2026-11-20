@@ -36,6 +36,13 @@ pub fn run() {
             commands::get_personnel_file,
             commands::create_personnel_file,
             commands::update_personnel_file,
+            commands::list_jobs,
+            commands::get_job,
+            commands::create_job,
+            commands::update_job,
+            commands::set_job_status,
+            commands::get_employment_for_file,
+            commands::create_employment_relationship,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

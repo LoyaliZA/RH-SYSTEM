@@ -82,6 +82,46 @@ async function installDesktop(page: Page, theme: "light" | "dark") {
         updatedAt: "2026-11-16T00:00:00Z",
       },
     ];
+    type Job = {
+      id: string;
+      companyId: string;
+      companyName: string;
+      code: string;
+      name: string;
+      description: string | null;
+      status: "active" | "inactive";
+      createdAt: string;
+      updatedAt: string;
+    };
+    type Employment = {
+      id: string;
+      companyId: string;
+      companyName: string;
+      personnelFileId: string;
+      startedOn: string;
+      endedOn: string | null;
+      state: "open" | "closed";
+      assignmentId: string;
+      jobId: string;
+      jobCode: string;
+      jobName: string;
+      jobStatus: "active" | "inactive";
+      effectiveOn: string;
+    };
+    const jobs: Job[] = [
+      {
+        id: "job-1",
+        companyId: "company-1",
+        companyName: "Norte",
+        code: "OP-01",
+        name: "Operación de piso",
+        description: null,
+        status: "active",
+        createdAt: "2026-11-16T00:00:00Z",
+        updatedAt: "2026-11-16T00:00:00Z",
+      },
+    ];
+    const relationships: Employment[] = [];
     function activeCompany() {
       return companies.find((company) => company.isActive) ?? null;
     }
@@ -251,6 +291,198 @@ async function installDesktop(page: Page, theme: "light" | "dark") {
           };
           files[index] = next;
           return next;
+        }
+        if (cmd === "list_jobs") {
+          const company = activeCompany();
+          if (!company) {
+            throw {
+              code: "active_company_required",
+              message: "No hay una empresa activa.",
+            };
+          }
+          return jobs
+            .filter((job) => job.companyId === company.id)
+            .map((job) => ({ ...job, companyName: company.displayName }));
+        }
+        if (cmd === "get_job") {
+          const company = activeCompany();
+          const job = jobs.find(
+            (item) => item.id === args.id && item.companyId === company?.id,
+          );
+          if (!job) {
+            throw {
+              code: "job_not_found",
+              message: "No se encontró el puesto en la empresa activa.",
+            };
+          }
+          return { ...job, companyName: company?.displayName ?? job.companyName };
+        }
+        if (cmd === "create_job") {
+          const company = activeCompany();
+          if (!company) {
+            throw {
+              code: "active_company_required",
+              message: "No hay una empresa activa.",
+            };
+          }
+          const input = args.input as {
+            code: string;
+            name: string;
+            description: string | null;
+          };
+          if (
+            jobs.some(
+              (job) =>
+                job.companyId === company.id &&
+                job.code.toLowerCase() === input.code.toLowerCase(),
+            )
+          ) {
+            throw {
+              code: "duplicate_job_code",
+              message: "Ya existe un puesto con ese código en la empresa activa.",
+            };
+          }
+          const created: Job = {
+            id: `job-${jobs.length + 1}`,
+            companyId: company.id,
+            companyName: company.displayName,
+            code: input.code,
+            name: input.name,
+            description: input.description,
+            status: "active",
+            createdAt: "2026-11-16T21:00:00Z",
+            updatedAt: "2026-11-16T21:00:00Z",
+          };
+          jobs.push(created);
+          return created;
+        }
+        if (cmd === "update_job") {
+          const company = activeCompany();
+          const input = args.input as {
+            code: string;
+            name: string;
+            description: string | null;
+          };
+          const index = jobs.findIndex(
+            (job) => job.id === args.id && job.companyId === company?.id,
+          );
+          const current = jobs[index];
+          if (!current) {
+            throw {
+              code: "job_not_found",
+              message: "No se encontró el puesto en la empresa activa.",
+            };
+          }
+          const next: Job = {
+            ...current,
+            code: input.code,
+            name: input.name,
+            description: input.description,
+            updatedAt: "2026-11-16T21:05:00Z",
+          };
+          jobs[index] = next;
+          return next;
+        }
+        if (cmd === "set_job_status") {
+          const company = activeCompany();
+          const input = args.input as { status: "active" | "inactive" };
+          const index = jobs.findIndex(
+            (job) => job.id === args.id && job.companyId === company?.id,
+          );
+          const current = jobs[index];
+          if (!current) {
+            throw {
+              code: "job_not_found",
+              message: "No se encontró el puesto en la empresa activa.",
+            };
+          }
+          const next: Job = {
+            ...current,
+            status: input.status,
+            updatedAt: "2026-11-16T21:06:00Z",
+          };
+          jobs[index] = next;
+          return next;
+        }
+        if (cmd === "get_employment_for_file") {
+          const company = activeCompany();
+          const file = files.find(
+            (item) =>
+              item.id === args.personnelFileId && item.companyId === company?.id,
+          );
+          if (!file || !company) {
+            throw {
+              code: "personnel_file_not_found",
+              message: "No se encontró el expediente en la empresa activa.",
+            };
+          }
+          const relationship = relationships.find(
+            (item) =>
+              item.personnelFileId === file.id &&
+              item.companyId === company.id &&
+              item.state === "open",
+          );
+          return relationship ? { ...relationship } : null;
+        }
+        if (cmd === "create_employment_relationship") {
+          const company = activeCompany();
+          if (!company) {
+            throw {
+              code: "active_company_required",
+              message: "No hay una empresa activa.",
+            };
+          }
+          const input = args.input as {
+            personnelFileId: string;
+            jobId: string;
+            startedOn: string;
+          };
+          const file = files.find(
+            (item) =>
+              item.id === input.personnelFileId && item.companyId === company.id,
+          );
+          if (!file) {
+            throw {
+              code: "personnel_file_not_found",
+              message: "No se encontró el expediente en la empresa activa.",
+            };
+          }
+          const job = jobs.find(
+            (item) => item.id === input.jobId && item.companyId === company.id,
+          );
+          if (!job) {
+            throw {
+              code: "job_not_found",
+              message: "No se encontró el puesto en la empresa activa.",
+            };
+          }
+          if (
+            relationships.some(
+              (item) => item.personnelFileId === file.id && item.state === "open",
+            )
+          ) {
+            throw {
+              code: "open_employment_relationship",
+              message: "Este expediente ya tiene una relación laboral vigente.",
+            };
+          }
+          const created: Employment = {
+            id: `rel-${relationships.length + 1}`,
+            companyId: company.id,
+            companyName: company.displayName,
+            personnelFileId: file.id,
+            startedOn: input.startedOn,
+            endedOn: null,
+            state: "open",
+            assignmentId: `asg-${relationships.length + 1}`,
+            jobId: job.id,
+            jobCode: job.code,
+            jobName: job.name,
+            jobStatus: job.status,
+            effectiveOn: input.startedOn,
+          };
+          relationships.push(created);
+          return created;
         }
         throw { code: "unknown", message: `Comando no disponible: ${cmd}` };
       },
@@ -596,6 +828,82 @@ test("reloads personnel files after changing the active company", async ({ page 
   await expect(page.getByText("ES-010")).toBeVisible();
   await expect(page.getByText("TN-001")).toHaveCount(0);
 });
+
+for (const theme of ["light", "dark"] as const) {
+  test(`jobs and the initial employment relationship stay inside the window in ${theme}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await installDesktop(page, theme);
+    await page.goto("/#/jobs");
+    await expect(page.getByRole("heading", { name: "Puestos" })).toBeVisible();
+    await expect(page.getByText("OP-01")).toBeVisible();
+    await expect(page.getByText("Operación de piso")).toBeVisible();
+    await expectNoHorizontalOverflow(page);
+    await expectTextContrast(page);
+
+    await page.getByRole("button", { name: "Nuevo puesto" }).click();
+    await expect(page.getByRole("heading", { name: "Nuevo puesto" })).toBeVisible();
+    const captureDir = process.env.F22_CAPTURE_DIR;
+    if (captureDir) {
+      await page.locator(".rh-drawer").evaluate(async (element) => {
+        await Promise.all(
+          element.getAnimations().map((animation) => animation.finished),
+        );
+      });
+      await page.screenshot({ path: `${captureDir}/jobs-form-${theme}.png` });
+    }
+    await page.getByRole("textbox", { name: /código/i }).fill("OP-02");
+    await page.getByRole("textbox", { name: /nombre del puesto/i }).fill("Recepción");
+    await page.getByRole("button", { name: "Crear puesto" }).click();
+    await expect(page.getByRole("status")).toContainText("Se creó el puesto.");
+    await expect(page.getByText("OP-02")).toBeVisible();
+    if (captureDir) {
+      await page.screenshot({
+        path: `${captureDir}/jobs-list-${theme}.png`,
+        fullPage: true,
+      });
+    }
+
+    await page.setViewportSize({ width: 800, height: 600 });
+    await expectNoHorizontalOverflow(page);
+    await page.setViewportSize({ width: 1280, height: 800 });
+
+    await page.goto("/#/files/file-1");
+    await expect(page.getByText("Sin relación laboral")).toBeVisible();
+    if (captureDir) {
+      await page.getByText("Sin relación laboral").evaluate((element) => {
+        element.scrollIntoView({ block: "center" });
+      });
+      await page.screenshot({ path: `${captureDir}/employment-empty-${theme}.png` });
+    }
+    await page.getByRole("button", { name: "Registrar relación inicial" }).click();
+    await page.getByLabel("Fecha de inicio").fill("2026-11-16");
+    await page.getByLabel("Puesto").selectOption("job-1");
+    await page.getByRole("button", { name: "Registrar relación" }).click();
+    await expect(page.getByRole("status")).toContainText(
+      "Se registró la relación laboral.",
+    );
+    await expect(page.getByText("16 de noviembre de 2026")).toBeVisible();
+    await expect(page.getByText("Vigente")).toBeVisible();
+    await expectNoHorizontalOverflow(page);
+    if (captureDir) {
+      await page.getByText("Puesto asignado").evaluate((element) => {
+        element.scrollIntoView({ block: "center" });
+      });
+      await page.screenshot({ path: `${captureDir}/employment-linked-${theme}.png` });
+    }
+
+    await page.goto("/#/");
+    await page.getByLabel("Elegir empresa").selectOption("company-2");
+    await page.goto("/#/jobs");
+    await expect(page.getByText("Todavía no hay puestos")).toBeVisible();
+    await expect(page.getByText("OP-01")).toHaveCount(0);
+    await page.goto("/#/files/file-2");
+    await expect(page.getByText("Sin relación laboral")).toBeVisible();
+    await expect(page.getByText("16 de noviembre de 2026")).toHaveCount(0);
+  });
+}
 
 test("changes the active company from the dashboard selector", async ({ page }) => {
   await page.setViewportSize({ width: 1024, height: 768 });
