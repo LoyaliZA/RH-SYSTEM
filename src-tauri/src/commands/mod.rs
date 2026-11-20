@@ -5,7 +5,10 @@ use tauri::State;
 use crate::domain::personnel_operations_permitted;
 use crate::error::AppError;
 use crate::persistence::SqliteCompanyRepository;
-use crate::use_cases::{self, CompanyView, CompanyWrite, PersonnelFileView, PersonnelFileWrite};
+use crate::use_cases::{
+    self, CompanyView, CompanyWrite, EmploymentView, EmploymentWrite, JobStatusWrite, JobView,
+    JobWrite, PersonnelFileView, PersonnelFileWrite,
+};
 
 pub(crate) struct AppState {
     pub repo: Mutex<SqliteCompanyRepository>,
@@ -112,5 +115,64 @@ pub(crate) fn update_personnel_file(
 ) -> Result<PersonnelFileView, AppError> {
     with_personnel_repository(&state, |repository| {
         use_cases::update_personnel_file(repository, &id, input)
+    })
+}
+
+#[tauri::command]
+pub(crate) fn list_jobs(state: State<'_, AppState>) -> Result<Vec<JobView>, AppError> {
+    with_personnel_repository(&state, use_cases::list_jobs)
+}
+
+#[tauri::command]
+pub(crate) fn get_job(state: State<'_, AppState>, id: String) -> Result<JobView, AppError> {
+    with_personnel_repository(&state, |repository| use_cases::get_job(repository, &id))
+}
+
+#[tauri::command]
+pub(crate) fn create_job(state: State<'_, AppState>, input: JobWrite) -> Result<JobView, AppError> {
+    with_personnel_repository(&state, |repository| {
+        use_cases::create_job(repository, input)
+    })
+}
+
+#[tauri::command]
+pub(crate) fn update_job(
+    state: State<'_, AppState>,
+    id: String,
+    input: JobWrite,
+) -> Result<JobView, AppError> {
+    with_personnel_repository(&state, |repository| {
+        use_cases::update_job(repository, &id, input)
+    })
+}
+
+#[tauri::command]
+pub(crate) fn set_job_status(
+    state: State<'_, AppState>,
+    id: String,
+    input: JobStatusWrite,
+) -> Result<JobView, AppError> {
+    with_personnel_repository(&state, |repository| {
+        use_cases::set_job_status(repository, &id, input)
+    })
+}
+
+#[tauri::command]
+pub(crate) fn get_employment_for_file(
+    state: State<'_, AppState>,
+    personnel_file_id: String,
+) -> Result<Option<EmploymentView>, AppError> {
+    with_personnel_repository(&state, |repository| {
+        use_cases::get_employment_for_file(repository, &personnel_file_id)
+    })
+}
+
+#[tauri::command]
+pub(crate) fn create_employment_relationship(
+    state: State<'_, AppState>,
+    input: EmploymentWrite,
+) -> Result<EmploymentView, AppError> {
+    with_personnel_repository(&state, |repository| {
+        use_cases::create_employment_relationship(repository, input)
     })
 }

@@ -47,6 +47,14 @@ export const primaryModules: AppModule[] = [
     summary: "Expedientes de personal sintéticos de la empresa activa.",
     icon: FolderClosed,
   },
+  {
+    id: "jobs",
+    label: "Puestos",
+    to: "/jobs",
+    implemented: true,
+    summary: "Catálogo de puestos de la empresa activa.",
+    icon: Briefcase,
+  },
 ];
 
 export const plannedModules: AppModule[] = [
@@ -57,14 +65,6 @@ export const plannedModules: AppModule[] = [
     implemented: false,
     summary: "Áreas, centros de trabajo y estructura de la empresa activa.",
     icon: Network,
-  },
-  {
-    id: "jobs",
-    label: "Puestos",
-    to: "/modules/jobs",
-    implemented: false,
-    summary: "Catálogo de puestos y su relación con la organización.",
-    icon: Briefcase,
   },
   {
     id: "users",

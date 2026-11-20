@@ -8,6 +8,7 @@ use crate::error::AppError;
 const MIGRATIONS: &[(i64, &str)] = &[
     (1, include_str!("../../migrations/001_init.sql")),
     (2, include_str!("../../migrations/002_personnel.sql")),
+    (3, include_str!("../../migrations/003_jobs_employment.sql")),
 ];
 
 pub(crate) fn open_database(path: &Path) -> Result<Connection, AppError> {
@@ -120,12 +121,12 @@ mod tests {
         let database = TempDatabase::new();
         let connection = open_database(&database.path()).unwrap();
         assert!(foreign_keys_enabled(&connection).unwrap());
-        assert_eq!(user_version(&connection).unwrap(), 2);
+        assert_eq!(user_version(&connection).unwrap(), 3);
         drop(connection);
 
         let reopened = open_database(&database.path()).unwrap();
         assert!(foreign_keys_enabled(&reopened).unwrap());
-        assert_eq!(user_version(&reopened).unwrap(), 2);
+        assert_eq!(user_version(&reopened).unwrap(), 3);
 
         reopened
             .execute_batch(
@@ -167,7 +168,7 @@ mod tests {
         drop(connection);
 
         let migrated = open_database(&path).unwrap();
-        assert_eq!(user_version(&migrated).unwrap(), 2);
+        assert_eq!(user_version(&migrated).unwrap(), 3);
         let legal_name: String = migrated
             .query_row(
                 "SELECT legal_name FROM companies WHERE id = 'company-a'",
@@ -182,8 +183,18 @@ mod tests {
         let files: i64 = migrated
             .query_row("SELECT COUNT(*) FROM personnel_files", [], |row| row.get(0))
             .unwrap();
+        let jobs: i64 = migrated
+            .query_row("SELECT COUNT(*) FROM jobs", [], |row| row.get(0))
+            .unwrap();
+        let relationships: i64 = migrated
+            .query_row("SELECT COUNT(*) FROM employment_relationships", [], |row| {
+                row.get(0)
+            })
+            .unwrap();
         assert_eq!(people, 0);
         assert_eq!(files, 0);
+        assert_eq!(jobs, 0);
+        assert_eq!(relationships, 0);
 
         let rejected = migrated.execute(
             "INSERT INTO personnel_files (
@@ -193,5 +204,214 @@ mod tests {
             [],
         );
         assert!(rejected.is_err());
+    }
+
+    #[test]
+    fn migrates_f21_database_without_losing_files_or_seeding_jobs() {
+        let database = TempDatabase::new();
+        let path = database.path();
+        let connection = Connection::open(&path).unwrap();
+        connection
+            .pragma_update(None, "foreign_keys", "ON")
+            .unwrap();
+        connection
+            .execute_batch(include_str!("../../migrations/001_init.sql"))
+            .unwrap();
+        connection
+            .execute_batch(include_str!("../../migrations/002_personnel.sql"))
+            .unwrap();
+        connection.pragma_update(None, "user_version", 2).unwrap();
+        connection
+            .execute(
+                "INSERT INTO companies (id, legal_name, trade_name, tax_id, created_at, updated_at)
+                 VALUES (
+                    'company-a', 'Taller Norte', 'Norte', 'DEMO-0001',
+                    '2026-11-16T00:00:00Z', '2026-11-16T00:00:00Z'
+                 )",
+                [],
+            )
+            .unwrap();
+        connection
+            .execute(
+                "INSERT INTO companies (id, legal_name, trade_name, tax_id, created_at, updated_at)
+                 VALUES (
+                    'company-b', 'Estudio Sur', NULL, NULL,
+                    '2026-11-16T00:00:00Z', '2026-11-16T00:00:00Z'
+                 )",
+                [],
+            )
+            .unwrap();
+        connection
+            .execute(
+                "INSERT INTO people (
+                    id, company_id, given_name, family_name, created_at, updated_at, archived_at
+                 ) VALUES (
+                    'person-a', 'company-a', 'Alex', 'Rivera',
+                    '2026-11-16T00:00:00Z', '2026-11-16T00:00:00Z', NULL
+                 )",
+                [],
+            )
+            .unwrap();
+        connection
+            .execute(
+                "INSERT INTO personnel_files (
+                    id, company_id, person_id, employee_number, administrative_status,
+                    created_at, updated_at, archived_at
+                 ) VALUES (
+                    'file-a', 'company-a', 'person-a', 'TN-001', 'active',
+                    '2026-11-16T00:00:00Z', '2026-11-16T00:00:00Z', NULL
+                 )",
+                [],
+            )
+            .unwrap();
+        drop(connection);
+
+        let migrated = open_database(&path).unwrap();
+        assert_eq!(user_version(&migrated).unwrap(), 3);
+        let employee_number: String = migrated
+            .query_row(
+                "SELECT employee_number FROM personnel_files WHERE id = 'file-a'",
+                [],
+                |row| row.get(0),
+            )
+            .unwrap();
+        assert_eq!(employee_number, "TN-001");
+        let jobs: i64 = migrated
+            .query_row("SELECT COUNT(*) FROM jobs", [], |row| row.get(0))
+            .unwrap();
+        let relationships: i64 = migrated
+            .query_row("SELECT COUNT(*) FROM employment_relationships", [], |row| {
+                row.get(0)
+            })
+            .unwrap();
+        assert_eq!(jobs, 0);
+        assert_eq!(relationships, 0);
+
+        migrated
+            .execute(
+                "INSERT INTO jobs (
+                    id, company_id, code, name, description, status, created_at, updated_at
+                 ) VALUES (
+                    'job-b', 'company-b', 'OP-01', 'Operación', NULL, 'active',
+                    '2026-11-16T00:00:00Z', '2026-11-16T00:00:00Z'
+                 )",
+                [],
+            )
+            .unwrap();
+        migrated
+            .execute(
+                "INSERT INTO employment_relationships (
+                    id, company_id, personnel_file_id, started_on, ended_on, created_at, updated_at
+                 ) VALUES (
+                    'rel-a', 'company-a', 'file-a', '2026-11-16', NULL,
+                    '2026-11-16T00:00:00Z', '2026-11-16T00:00:00Z'
+                 )",
+                [],
+            )
+            .unwrap();
+        let cross_company = migrated.execute(
+            "INSERT INTO job_assignments (
+                id, company_id, employment_relationship_id, job_id, effective_on, ended_on,
+                created_at, updated_at
+             ) VALUES (
+                'asg-a', 'company-a', 'rel-a', 'job-b', '2026-11-16', NULL,
+                '2026-11-16T00:00:00Z', '2026-11-16T00:00:00Z'
+             )",
+            [],
+        );
+        assert!(cross_company.is_err());
+
+        migrated
+            .execute(
+                "INSERT INTO jobs (
+                    id, company_id, code, name, description, status, created_at, updated_at
+                 ) VALUES (
+                    'job-a', 'company-a', 'OP-01', 'Operación', NULL, 'active',
+                    '2026-11-16T00:00:00Z', '2026-11-16T00:00:00Z'
+                 )",
+                [],
+            )
+            .unwrap();
+        migrated
+            .execute(
+                "INSERT INTO job_assignments (
+                    id, company_id, employment_relationship_id, job_id, effective_on, ended_on,
+                    created_at, updated_at
+                 ) VALUES (
+                    'asg-a', 'company-a', 'rel-a', 'job-a', '2026-11-16', NULL,
+                    '2026-11-16T00:00:00Z', '2026-11-16T00:00:00Z'
+                 )",
+                [],
+            )
+            .unwrap();
+        let duplicate_code = migrated.execute(
+            "INSERT INTO jobs (
+                id, company_id, code, name, description, status, created_at, updated_at
+             ) VALUES (
+                'job-a2', 'company-a', 'op-01', 'Otra operación', NULL, 'active',
+                '2026-11-16T00:00:00Z', '2026-11-16T00:00:00Z'
+             )",
+            [],
+        );
+        assert!(duplicate_code.is_err());
+        let second_open = migrated.execute(
+            "INSERT INTO employment_relationships (
+                id, company_id, personnel_file_id, started_on, ended_on, created_at, updated_at
+             ) VALUES (
+                'rel-a2', 'company-a', 'file-a', '2026-12-01', NULL,
+                '2026-11-16T00:00:00Z', '2026-11-16T00:00:00Z'
+             )",
+            [],
+        );
+        assert!(second_open.is_err());
+        migrated
+            .execute(
+                "UPDATE employment_relationships
+                 SET ended_on = '2026-12-01'
+                 WHERE id = 'rel-a'",
+                [],
+            )
+            .unwrap();
+        migrated
+            .execute(
+                "UPDATE job_assignments
+                 SET ended_on = '2026-12-01'
+                 WHERE id = 'asg-a'",
+                [],
+            )
+            .unwrap();
+        migrated
+            .execute(
+                "INSERT INTO employment_relationships (
+                    id, company_id, personnel_file_id, started_on, ended_on, created_at, updated_at
+                 ) VALUES (
+                    'rel-a2', 'company-a', 'file-a', '2027-01-01', NULL,
+                    '2026-11-16T00:00:00Z', '2026-11-16T00:00:00Z'
+                 )",
+                [],
+            )
+            .unwrap();
+        migrated
+            .execute(
+                "INSERT INTO job_assignments (
+                    id, company_id, employment_relationship_id, job_id, effective_on, ended_on,
+                    created_at, updated_at
+                 ) VALUES (
+                    'asg-a2', 'company-a', 'rel-a2', 'job-a', '2027-01-01', NULL,
+                    '2026-11-16T00:00:00Z', '2026-11-16T00:00:00Z'
+                 )",
+                [],
+            )
+            .unwrap();
+        let removed_job = migrated.execute("DELETE FROM jobs WHERE id = 'job-a'", []);
+        assert!(removed_job.is_err());
+        let kept: String = migrated
+            .query_row(
+                "SELECT employee_number FROM personnel_files WHERE id = 'file-a'",
+                [],
+                |row| row.get(0),
+            )
+            .unwrap();
+        assert_eq!(kept, "TN-001");
     }
 }
