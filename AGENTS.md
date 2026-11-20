@@ -15,11 +15,11 @@ Capas, de afuera hacia adentro:
 - `src/`: interfaz. Los componentes visuales no contienen reglas de negocio.
 - `src-tauri/src/commands`: adapta los comandos de Tauri a los casos de uso.
 - `src-tauri/src/use_cases`: orquesta validación y persistencia.
-- `src-tauri/src/domain`: empresa, normalización y errores de dominio.
-- `src-tauri/src/persistence`: contrato `CompanyRepository` y su implementación SQLite.
+- `src-tauri/src/domain`: empresa, persona, expediente, normalización y errores de dominio.
+- `src-tauri/src/persistence`: contratos `CompanyRepository` y `PersonnelFileRepository`, con implementación SQLite.
 - `src-tauri/src/infrastructure`: apertura de la base, claves foráneas y migraciones.
 
-La empresa es la raíz de aislamiento. Las tablas futuras de negocio deben llevar `company_id` hacia `companies`. Esta fase no implementa ese aislamiento completo: solo existe el agregado de empresas y la empresa activa.
+La empresa es la raíz de aislamiento. Las tablas de negocio llevan `company_id` hacia `companies`. Los expedientes de F2.1 se filtran y validan en Rust contra la empresa activa. Esa preferencia no es autorización: F1 sigue incompleta.
 
 El límite de aplicación son los casos de uso. Un backend central posterior puede implementar `CompanyRepository` sin mover las reglas al componente visual. No hay cliente HTTP ni PostgreSQL en esta fase.
 

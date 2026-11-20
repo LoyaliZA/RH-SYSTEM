@@ -5,7 +5,10 @@ use rusqlite::Connection;
 
 use crate::error::AppError;
 
-const MIGRATIONS: &[(i64, &str)] = &[(1, include_str!("../../migrations/001_init.sql"))];
+const MIGRATIONS: &[(i64, &str)] = &[
+    (1, include_str!("../../migrations/001_init.sql")),
+    (2, include_str!("../../migrations/002_personnel.sql")),
+];
 
 pub(crate) fn open_database(path: &Path) -> Result<Connection, AppError> {
     if let Some(parent) = path.parent() {
@@ -117,12 +120,12 @@ mod tests {
         let database = TempDatabase::new();
         let connection = open_database(&database.path()).unwrap();
         assert!(foreign_keys_enabled(&connection).unwrap());
-        assert_eq!(user_version(&connection).unwrap(), 1);
+        assert_eq!(user_version(&connection).unwrap(), 2);
         drop(connection);
 
         let reopened = open_database(&database.path()).unwrap();
         assert!(foreign_keys_enabled(&reopened).unwrap());
-        assert_eq!(user_version(&reopened).unwrap(), 1);
+        assert_eq!(user_version(&reopened).unwrap(), 2);
 
         reopened
             .execute_batch(
@@ -132,6 +135,63 @@ mod tests {
             )
             .unwrap();
         let rejected = reopened.execute("INSERT INTO fk_probe (company_id) VALUES ('missing')", []);
+        assert!(rejected.is_err());
+    }
+
+    #[test]
+    fn migrates_existing_v1_database_without_losing_companies_or_seeding_files() {
+        let database = TempDatabase::new();
+        let path = database.path();
+        let connection = Connection::open(&path).unwrap();
+        connection
+            .pragma_update(None, "foreign_keys", "ON")
+            .unwrap();
+        connection
+            .execute_batch(include_str!("../../migrations/001_init.sql"))
+            .unwrap();
+        connection.pragma_update(None, "user_version", 1).unwrap();
+        connection
+            .execute(
+                "INSERT INTO companies (id, legal_name, trade_name, tax_id, created_at, updated_at)
+                 VALUES (
+                    'company-a',
+                    'Taller Norte',
+                    'Norte',
+                    'DEMO-0001',
+                    '2026-11-14T00:00:00Z',
+                    '2026-11-14T00:00:00Z'
+                 )",
+                [],
+            )
+            .unwrap();
+        drop(connection);
+
+        let migrated = open_database(&path).unwrap();
+        assert_eq!(user_version(&migrated).unwrap(), 2);
+        let legal_name: String = migrated
+            .query_row(
+                "SELECT legal_name FROM companies WHERE id = 'company-a'",
+                [],
+                |row| row.get(0),
+            )
+            .unwrap();
+        assert_eq!(legal_name, "Taller Norte");
+        let people: i64 = migrated
+            .query_row("SELECT COUNT(*) FROM people", [], |row| row.get(0))
+            .unwrap();
+        let files: i64 = migrated
+            .query_row("SELECT COUNT(*) FROM personnel_files", [], |row| row.get(0))
+            .unwrap();
+        assert_eq!(people, 0);
+        assert_eq!(files, 0);
+
+        let rejected = migrated.execute(
+            "INSERT INTO personnel_files (
+                id, company_id, person_id, employee_number, administrative_status,
+                created_at, updated_at, archived_at
+             ) VALUES ('file-1', 'missing', 'person-1', 'TN-001', 'active', 't', 't', NULL)",
+            [],
+        );
         assert!(rejected.is_err());
     }
 }

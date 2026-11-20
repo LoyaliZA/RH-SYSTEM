@@ -17,6 +17,19 @@ type Company = {
   updatedAt: string;
 };
 
+type PersonnelFile = {
+  id: string;
+  personId: string;
+  companyId: string;
+  companyName: string;
+  employeeNumber: string;
+  givenName: string;
+  familyName: string;
+  administrativeStatus: "active" | "inactive";
+  createdAt: string;
+  updatedAt: string;
+};
+
 async function installDesktop(page: Page, theme: "light" | "dark") {
   await page.addInitScript((initialTheme) => {
     localStorage.setItem("rh-system-theme", initialTheme);
@@ -43,6 +56,58 @@ async function installDesktop(page: Page, theme: "light" | "dark") {
         updatedAt: "2026-11-14T20:00:00Z",
       },
     ];
+    const files: PersonnelFile[] = [
+      {
+        id: "file-1",
+        personId: "person-1",
+        companyId: "company-1",
+        companyName: "Norte",
+        employeeNumber: "TN-001",
+        givenName: "Alex",
+        familyName: "Rivera",
+        administrativeStatus: "active",
+        createdAt: "2026-11-16T00:00:00Z",
+        updatedAt: "2026-11-16T00:00:00Z",
+      },
+      {
+        id: "file-2",
+        personId: "person-2",
+        companyId: "company-2",
+        companyName: "Estudio Sur",
+        employeeNumber: "ES-010",
+        givenName: "Pat",
+        familyName: "Gómez",
+        administrativeStatus: "inactive",
+        createdAt: "2026-11-16T00:00:00Z",
+        updatedAt: "2026-11-16T00:00:00Z",
+      },
+    ];
+    function activeCompany() {
+      return companies.find((company) => company.isActive) ?? null;
+    }
+    function filesForActiveCompany(query?: string | null) {
+      const company = activeCompany();
+      if (!company) {
+        throw {
+          code: "active_company_required",
+          message: "No hay una empresa activa.",
+        };
+      }
+      const needle = (query ?? "").trim().toLowerCase();
+      return files.filter((file) => {
+        if (file.companyId !== company.id) {
+          return false;
+        }
+        if (!needle) {
+          return true;
+        }
+        return (
+          file.employeeNumber.toLowerCase().includes(needle) ||
+          file.givenName.toLowerCase().includes(needle) ||
+          file.familyName.toLowerCase().includes(needle)
+        );
+      });
+    }
     window.__TAURI_INTERNALS__ = {
       invoke: async (cmd: string, args: Record<string, never> = {}) => {
         if (cmd === "list_companies") {
@@ -98,6 +163,94 @@ async function installDesktop(page: Page, theme: "light" | "dark") {
             throw { code: "company_not_found", message: "La empresa no existe." };
           }
           return { ...active };
+        }
+        if (cmd === "list_personnel_files") {
+          return filesForActiveCompany(args.query as string | null);
+        }
+        if (cmd === "get_personnel_file") {
+          const company = activeCompany();
+          const file = files.find(
+            (item) => item.id === args.id && item.companyId === company?.id,
+          );
+          if (!file) {
+            throw {
+              code: "personnel_file_not_found",
+              message: "No se encontró el expediente en la empresa activa.",
+            };
+          }
+          return { ...file };
+        }
+        if (cmd === "create_personnel_file") {
+          const company = activeCompany();
+          if (!company) {
+            throw {
+              code: "active_company_required",
+              message: "No hay una empresa activa.",
+            };
+          }
+          const input = args.input as {
+            givenName: string;
+            familyName: string;
+            employeeNumber: string;
+            administrativeStatus: "active" | "inactive";
+          };
+          if (
+            files.some(
+              (file) =>
+                file.companyId === company.id &&
+                file.employeeNumber.toLowerCase() ===
+                  input.employeeNumber.toLowerCase(),
+            )
+          ) {
+            throw {
+              code: "duplicate_employee_number",
+              message:
+                "Ya existe un expediente con ese número de empleado en la empresa activa.",
+            };
+          }
+          const created: PersonnelFile = {
+            id: `file-${files.length + 1}`,
+            personId: `person-${files.length + 1}`,
+            companyId: company.id,
+            companyName: company.displayName,
+            employeeNumber: input.employeeNumber,
+            givenName: input.givenName,
+            familyName: input.familyName,
+            administrativeStatus: input.administrativeStatus,
+            createdAt: "2026-11-16T21:00:00Z",
+            updatedAt: "2026-11-16T21:00:00Z",
+          };
+          files.push(created);
+          return created;
+        }
+        if (cmd === "update_personnel_file") {
+          const company = activeCompany();
+          const input = args.input as {
+            givenName: string;
+            familyName: string;
+            employeeNumber: string;
+            administrativeStatus: "active" | "inactive";
+          };
+          const index = files.findIndex(
+            (file) => file.id === args.id && file.companyId === company?.id,
+          );
+          const current = files[index];
+          if (!current) {
+            throw {
+              code: "personnel_file_not_found",
+              message: "No se encontró el expediente en la empresa activa.",
+            };
+          }
+          const next: PersonnelFile = {
+            ...current,
+            givenName: input.givenName,
+            familyName: input.familyName,
+            employeeNumber: input.employeeNumber,
+            administrativeStatus: input.administrativeStatus,
+            updatedAt: "2026-11-16T21:05:00Z",
+          };
+          files[index] = next;
+          return next;
         }
         throw { code: "unknown", message: `Comando no disponible: ${cmd}` };
       },
@@ -225,6 +378,14 @@ for (const viewport of viewports) {
       expect((actionBox?.x ?? 0) + (actionBox?.width ?? 0)).toBeLessThanOrEqual(
         viewport.width,
       );
+
+      await page.goto("/#/files");
+      await expect(page.getByRole("heading", { name: "Expedientes" })).toBeVisible();
+      await expect(page.getByText("TN-001")).toBeVisible();
+      await expect(
+        page.getByRole("button", { name: "Nuevo expediente" }),
+      ).toBeVisible();
+      await expectNoHorizontalOverflow(page);
     });
   }
 }
@@ -394,6 +555,47 @@ for (const theme of ["light", "dark"] as const) {
     await expectTextContrast(page);
   });
 }
+
+test("creates, searches and edits a synthetic personnel file", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await installDesktop(page, "light");
+  await page.goto("/#/files");
+  await expect(page.getByRole("heading", { name: "Expedientes" })).toBeVisible();
+  await page.getByRole("button", { name: "Nuevo expediente" }).click();
+  await page.getByRole("textbox", { name: /^nombre/i }).fill("Sam");
+  await page.getByRole("textbox", { name: /apellidos/i }).fill("Ortega");
+  await page.getByRole("textbox", { name: /número de empleado/i }).fill("TN-002");
+  await page.getByRole("button", { name: "Crear expediente" }).click();
+  await expect(page.getByRole("status")).toContainText("Se creó el expediente.");
+  await expect(page.getByText("TN-002")).toBeVisible();
+
+  await page.getByLabel("Buscar expedientes").fill("TN-002");
+  await page.getByRole("button", { name: "Buscar" }).click();
+  await expect(page.getByText("TN-002")).toBeVisible();
+  await expect(page.getByText("TN-001")).toHaveCount(0);
+
+  await page.getByRole("link", { name: "Consultar" }).click();
+  await expect(page.getByText("file-3")).toBeVisible();
+  await expect(
+    page.locator("#contenido").getByText("Norte", { exact: true }),
+  ).toBeVisible();
+  await page.getByRole("textbox", { name: /apellidos/i }).fill("Ortega Díaz");
+  await expect(page.getByText("Hay cambios sin guardar.")).toBeVisible();
+  await page.getByRole("button", { name: "Guardar cambios" }).click();
+  await expect(page.getByRole("status")).toContainText("Se guardaron los cambios.");
+});
+
+test("reloads personnel files after changing the active company", async ({ page }) => {
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await installDesktop(page, "dark");
+  await page.goto("/#/files");
+  await expect(page.getByText("TN-001")).toBeVisible();
+  await page.goto("/#/");
+  await page.getByLabel("Elegir empresa").selectOption("company-2");
+  await page.goto("/#/files");
+  await expect(page.getByText("ES-010")).toBeVisible();
+  await expect(page.getByText("TN-001")).toHaveCount(0);
+});
 
 test("changes the active company from the dashboard selector", async ({ page }) => {
   await page.setViewportSize({ width: 1024, height: 768 });

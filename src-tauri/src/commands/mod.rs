@@ -2,9 +2,10 @@ use std::sync::Mutex;
 
 use tauri::State;
 
+use crate::domain::personnel_operations_permitted;
 use crate::error::AppError;
 use crate::persistence::SqliteCompanyRepository;
-use crate::use_cases::{self, CompanyView, CompanyWrite};
+use crate::use_cases::{self, CompanyView, CompanyWrite, PersonnelFileView, PersonnelFileWrite};
 
 pub(crate) struct AppState {
     pub repo: Mutex<SqliteCompanyRepository>,
@@ -62,5 +63,54 @@ pub(crate) fn set_active_company(
 ) -> Result<CompanyView, AppError> {
     with_repository(&state, |repository| {
         use_cases::set_active_company(repository, &id)
+    })
+}
+
+fn with_personnel_repository<T>(
+    state: &AppState,
+    action: impl FnOnce(&SqliteCompanyRepository) -> Result<T, AppError>,
+) -> Result<T, AppError> {
+    personnel_operations_permitted(cfg!(debug_assertions))?;
+    with_repository(state, action)
+}
+
+#[tauri::command]
+pub(crate) fn list_personnel_files(
+    state: State<'_, AppState>,
+    query: Option<String>,
+) -> Result<Vec<PersonnelFileView>, AppError> {
+    with_personnel_repository(&state, |repository| {
+        use_cases::list_personnel_files(repository, query)
+    })
+}
+
+#[tauri::command]
+pub(crate) fn get_personnel_file(
+    state: State<'_, AppState>,
+    id: String,
+) -> Result<PersonnelFileView, AppError> {
+    with_personnel_repository(&state, |repository| {
+        use_cases::get_personnel_file(repository, &id)
+    })
+}
+
+#[tauri::command]
+pub(crate) fn create_personnel_file(
+    state: State<'_, AppState>,
+    input: PersonnelFileWrite,
+) -> Result<PersonnelFileView, AppError> {
+    with_personnel_repository(&state, |repository| {
+        use_cases::create_personnel_file(repository, input)
+    })
+}
+
+#[tauri::command]
+pub(crate) fn update_personnel_file(
+    state: State<'_, AppState>,
+    id: String,
+    input: PersonnelFileWrite,
+) -> Result<PersonnelFileView, AppError> {
+    with_personnel_repository(&state, |repository| {
+        use_cases::update_personnel_file(repository, &id, input)
     })
 }

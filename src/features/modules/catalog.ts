@@ -39,6 +39,14 @@ export const primaryModules: AppModule[] = [
     summary: "Alta, consulta y actualización de empresas en este equipo.",
     icon: Building2,
   },
+  {
+    id: "files",
+    label: "Expedientes",
+    to: "/files",
+    implemented: true,
+    summary: "Expedientes de personal sintéticos de la empresa activa.",
+    icon: FolderClosed,
+  },
 ];
 
 export const plannedModules: AppModule[] = [
@@ -49,14 +57,6 @@ export const plannedModules: AppModule[] = [
     implemented: false,
     summary: "Áreas, centros de trabajo y estructura de la empresa activa.",
     icon: Network,
-  },
-  {
-    id: "files",
-    label: "Expedientes",
-    to: "/modules/files",
-    implemented: false,
-    summary: "Expedientes de personal y datos laborales de cada persona.",
-    icon: FolderClosed,
   },
   {
     id: "jobs",

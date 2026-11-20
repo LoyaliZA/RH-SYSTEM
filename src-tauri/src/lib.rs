@@ -32,6 +32,10 @@ pub fn run() {
             commands::create_company,
             commands::update_company,
             commands::set_active_company,
+            commands::list_personnel_files,
+            commands::get_personnel_file,
+            commands::create_personnel_file,
+            commands::update_personnel_file,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

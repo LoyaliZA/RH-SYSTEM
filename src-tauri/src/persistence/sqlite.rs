@@ -18,6 +18,10 @@ impl SqliteCompanyRepository {
         let connection = open_database(path)?;
         Ok(Self { connection })
     }
+
+    pub(crate) fn connection(&self) -> &rusqlite::Connection {
+        &self.connection
+    }
 }
 
 impl CompanyRepository for SqliteCompanyRepository {

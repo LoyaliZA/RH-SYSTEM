@@ -37,6 +37,10 @@ describe("Sidebar", () => {
     );
     expect(localStorage.getItem(sidebarStorageKey)).toBe("collapsed");
     expect(screen.getByRole("link", { name: "Vacaciones" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Expedientes" })).toHaveAttribute(
+      "href",
+      "/files",
+    );
     expect(screen.getByRole("navigation", { name: "Módulos" })).toHaveAttribute(
       "id",
       "navegacion-modulos",

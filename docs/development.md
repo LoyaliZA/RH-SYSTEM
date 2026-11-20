@@ -67,7 +67,7 @@ cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets -- -D warnings
 cargo test --manifest-path src-tauri/Cargo.toml
 ```
 
-`npm run check:boundaries` falla si `src/` menciona SQLite. Las pruebas de Rust usan una base temporal y empresas ficticias. No uses datos personales reales.
+`npm run check:boundaries` falla si `src/` menciona SQLite. Las pruebas de Rust usan una base temporal, empresas ficticias y expedientes sintéticos (por ejemplo «Alex Rivera» / `TN-001`). No uses datos personales reales. Las instalaciones existentes no reciben empleados de ejemplo al migrar a `002`. Las operaciones de personal solo están permitidas en compilaciones de desarrollo; en producción Rust las rechaza con `personnel_disabled_in_production`.
 
 `npm run test:visual` ejecuta Playwright contra el servidor de Vite. Cubre 1280×800, 1024×768 y 800×600 en tema claro y oscuro, el desbordamiento horizontal, el contraste del texto y el flujo de editar una empresa sin perder el nombre comercial ni el identificador fiscal. No entra en `npm run check`: el flujo de CI no instala Chromium. La ventana nativa sigue comprobándose con `npm run tauri dev`.
 
