@@ -20,6 +20,20 @@ pub enum AppError {
     AdministrativeStatusInvalid,
     PersonnelFileNotFound,
     PersonnelDisabledInProduction,
+    JobCodeRequired,
+    JobCodeTooLong,
+    JobCodeInvalid,
+    JobNameRequired,
+    JobNameTooLong,
+    JobDescriptionTooLong,
+    JobStatusInvalid,
+    DuplicateJobCode,
+    JobNotFound,
+    JobNotAssignable,
+    CalendarDateInvalid,
+    CalendarDateOutOfRange,
+    OpenEmploymentRelationship,
+    CompanyBoundaryViolation,
     ForeignKeysDisabled,
     Migration(String),
     Database(String),
@@ -46,6 +60,20 @@ impl AppError {
             Self::AdministrativeStatusInvalid => "administrative_status_invalid",
             Self::PersonnelFileNotFound => "personnel_file_not_found",
             Self::PersonnelDisabledInProduction => "personnel_disabled_in_production",
+            Self::JobCodeRequired => "job_code_required",
+            Self::JobCodeTooLong => "job_code_too_long",
+            Self::JobCodeInvalid => "job_code_invalid",
+            Self::JobNameRequired => "job_name_required",
+            Self::JobNameTooLong => "job_name_too_long",
+            Self::JobDescriptionTooLong => "job_description_too_long",
+            Self::JobStatusInvalid => "job_status_invalid",
+            Self::DuplicateJobCode => "duplicate_job_code",
+            Self::JobNotFound => "job_not_found",
+            Self::JobNotAssignable => "job_not_assignable",
+            Self::CalendarDateInvalid => "calendar_date_invalid",
+            Self::CalendarDateOutOfRange => "calendar_date_out_of_range",
+            Self::OpenEmploymentRelationship => "open_employment_relationship",
+            Self::CompanyBoundaryViolation => "company_boundary_violation",
             Self::ForeignKeysDisabled => "foreign_keys_disabled",
             Self::Migration(_) => "migration",
             Self::Database(_) => "database",
@@ -63,7 +91,7 @@ impl AppError {
             }
             Self::CompanyNotFound => "No se encontró la empresa.".to_string(),
             Self::ActiveCompanyRequired => {
-                "No hay una empresa activa. Cree o active una empresa antes de operar expedientes."
+                "No hay una empresa activa. Cree o active una empresa antes de continuar."
                     .to_string()
             }
             Self::GivenNameRequired => "El nombre es obligatorio.".to_string(),
@@ -88,7 +116,33 @@ impl AppError {
                 "No se encontró el expediente en la empresa activa.".to_string()
             }
             Self::PersonnelDisabledInProduction => {
-                "Las operaciones de personal no están disponibles en compilaciones de producción mientras falten autenticación y autorización. Use una compilación de desarrollo con datos sintéticos.".to_string()
+                "Las operaciones de personal, incluidos puestos y relaciones laborales, no están disponibles en compilaciones de producción mientras falten autenticación y autorización. Use una compilación de desarrollo con datos sintéticos.".to_string()
+            }
+            Self::JobCodeRequired => "El código del puesto es obligatorio.".to_string(),
+            Self::JobCodeTooLong => "El código del puesto supera 32 caracteres.".to_string(),
+            Self::JobCodeInvalid => {
+                "El código del puesto solo puede incluir letras, números y guiones.".to_string()
+            }
+            Self::JobNameRequired => "El nombre del puesto es obligatorio.".to_string(),
+            Self::JobNameTooLong => "El nombre del puesto supera 120 caracteres.".to_string(),
+            Self::JobDescriptionTooLong => "La descripción supera 500 caracteres.".to_string(),
+            Self::JobStatusInvalid => "El estado del puesto no es válido.".to_string(),
+            Self::DuplicateJobCode => {
+                "Ya existe un puesto con ese código en la empresa activa.".to_string()
+            }
+            Self::JobNotFound => "No se encontró el puesto en la empresa activa.".to_string(),
+            Self::JobNotAssignable => {
+                "El puesto está inactivo y no admite nuevas asignaciones.".to_string()
+            }
+            Self::CalendarDateInvalid => {
+                "La fecha debe ser un día de calendario con formato AAAA-MM-DD.".to_string()
+            }
+            Self::CalendarDateOutOfRange => "La fecha debe estar entre 1900 y 2100.".to_string(),
+            Self::OpenEmploymentRelationship => {
+                "Este expediente ya tiene una relación laboral vigente.".to_string()
+            }
+            Self::CompanyBoundaryViolation => {
+                "No se puede vincular un puesto y un expediente de empresas distintas.".to_string()
             }
             Self::ForeignKeysDisabled => {
                 "La base de datos no tiene las claves foráneas activas.".to_string()

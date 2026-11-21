@@ -2,9 +2,9 @@
 
 ## Plan maestro de desarrollo
 
-El estado de las entregas funcionales, sus dependencias y el horizonte completo de evolución están en [ROADMAP.md](ROADMAP.md). La **Entrega 1.5** documenta este plan. **F2.1** (expedientes sintéticos) se describe en [docs/personnel.md](docs/personnel.md) y no cierra F1 ni F2. Consulta el roadmap y los PR recientes antes de planificar nuevas fases.
+El estado de las entregas funcionales, sus dependencias y el horizonte completo de evolución están en [ROADMAP.md](ROADMAP.md). La **Entrega 1.5** documenta este plan. **F2.1** quedó fusionada en main (PR #6). **F2.2** (puestos y relación laboral inicial, datos sintéticos) se describe en [docs/personnel.md](docs/personnel.md) y no cierra F1 ni F2. Consulta el roadmap y los PR recientes antes de planificar nuevas fases.
 
-Sistema de gestión de recursos humanos para escritorio. Esta fase deja el cascarón navegable, el CRUD de empresas y el núcleo de expedientes digitales (F2.1) con datos sintéticos en SQLite. F1 (autenticación y autorización) sigue incompleta: no usar información personal real. El resto de los módulos todavía no está implementado.
+Sistema de gestión de recursos humanos para escritorio. Esta fase deja el cascarón navegable, el CRUD de empresas, el núcleo de expedientes digitales (F2.1) y el catálogo de puestos con la relación laboral inicial (F2.2) con datos sintéticos en SQLite. F1 (autenticación y autorización) sigue incompleta: no usar información personal real. El resto de los módulos todavía no está implementado.
 
 ## Requisitos
 

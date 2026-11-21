@@ -39,7 +39,7 @@ export function DashboardPage() {
     <div className="flex flex-col gap-6">
       <PageHeader
         title="Inicio"
-        description="Este escritorio guarda las empresas y los expedientes sintéticos en el equipo. Autenticación, puestos y el resto de recursos humanos todavía no están implementados."
+        description="Este escritorio guarda las empresas, los expedientes sintéticos y el catálogo de puestos en el equipo. Autenticación y el resto de recursos humanos todavía no están implementados."
       />
 
       <Bento>

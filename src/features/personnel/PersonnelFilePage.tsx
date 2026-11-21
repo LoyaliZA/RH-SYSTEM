@@ -11,6 +11,8 @@ import { Card } from "@/components/ui/card";
 import { StatusLabel } from "@/components/ui/status-label";
 import { useCompanies } from "@/features/companies/company-context";
 
+import { EmploymentSection } from "@/features/employment/EmploymentSection";
+
 import { getPersonnelFile, updatePersonnelFile } from "./api";
 import { fieldForError, readCommandError } from "./errors";
 import { PersonnelFileForm } from "./PersonnelFileForm";
@@ -188,7 +190,7 @@ export function PersonnelFilePage() {
         title={
           fileReady ? `${load.file.givenName} ${load.file.familyName}` : "Expediente"
         }
-        description="Expediente digital de la empresa activa. La relación laboral, puestos e historial se añadirán después."
+        description="Expediente digital de la empresa activa. La relación laboral inicial se consulta en esta pantalla. No hay historial salarial ni movimientos."
         actions={
           <Button type="button" variant="outline" onClick={goBack}>
             Volver al listado
@@ -205,63 +207,71 @@ export function PersonnelFilePage() {
         <ErrorState title="No se encontró el expediente" message={fileError.message} />
       ) : null}
       {fileReady && values ? (
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(18rem,0.8fr)]">
-          <Card className="p-6">
-            <PersonnelFileForm
-              mode="edit"
-              values={values}
-              fieldErrors={fieldErrors}
-              formError={formError}
-              pending={pending}
-              dirty={dirty}
-              onChange={changeField}
-              onSubmit={() => void submit()}
-              onCancel={goBack}
-            />
-          </Card>
-          <div className="flex flex-col gap-4">
-            <Card className="space-y-3 p-5">
-              <h2 className="text-lg font-semibold tracking-tight">
-                Identidad del expediente
-              </h2>
-              <Definition label="Identificador interno" value={load.file.id} mono />
-              <Definition
-                label="Identificador de persona"
-                value={load.file.personId}
-                mono
+        <>
+          <div className="grid gap-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(18rem,0.8fr)]">
+            <Card className="p-6">
+              <PersonnelFileForm
+                mode="edit"
+                values={values}
+                fieldErrors={fieldErrors}
+                formError={formError}
+                pending={pending}
+                dirty={dirty}
+                onChange={changeField}
+                onSubmit={() => void submit()}
+                onCancel={goBack}
               />
-              <Definition label="Empresa" value={load.file.companyName} />
-              <div>
-                <p className="text-sm text-muted-foreground">Estado administrativo</p>
-                <StatusLabel
-                  tone={
-                    load.file.administrativeStatus === "active" ? "active" : "inactive"
-                  }
-                >
-                  {administrativeStatusLabels[load.file.administrativeStatus]}
-                </StatusLabel>
-              </div>
             </Card>
-            <Card className="space-y-2 p-5">
-              <h2 className="text-lg font-semibold tracking-tight">
-                Fuera de esta entrega
-              </h2>
-              <p className="text-sm leading-6 text-muted-foreground">
-                Salarios, contratos, documentos sensibles, bancos, CURP, RFC y
-                movimientos laborales no están disponibles. La relación laboral queda
-                prevista para entregas posteriores.
-              </p>
-              <p>
-                <Link
-                  to="/modules/jobs"
-                  className="text-sm font-medium text-primary-ink underline decoration-primary-ink/40 underline-offset-4"
-                >
-                  Puestos (en preparación)
-                </Link>
-              </p>
-            </Card>
+            <div className="flex flex-col gap-4">
+              <Card className="space-y-3 p-5">
+                <h2 className="text-lg font-semibold tracking-tight">
+                  Identidad del expediente
+                </h2>
+                <Definition label="Identificador interno" value={load.file.id} mono />
+                <Definition
+                  label="Identificador de persona"
+                  value={load.file.personId}
+                  mono
+                />
+                <Definition label="Empresa" value={load.file.companyName} />
+                <div>
+                  <p className="text-sm text-muted-foreground">Estado administrativo</p>
+                  <StatusLabel
+                    tone={
+                      load.file.administrativeStatus === "active"
+                        ? "active"
+                        : "inactive"
+                    }
+                  >
+                    {administrativeStatusLabels[load.file.administrativeStatus]}
+                  </StatusLabel>
+                </div>
+              </Card>
+              <Card className="space-y-2 p-5">
+                <h2 className="text-lg font-semibold tracking-tight">
+                  Fuera de esta entrega
+                </h2>
+                <p className="text-sm leading-6 text-muted-foreground">
+                  Salarios, contratos, documentos sensibles, bancos, CURP, RFC,
+                  historial de puestos y movimientos laborales no están disponibles. El
+                  estado administrativo no abre ni cierra la relación laboral.
+                </p>
+                <p>
+                  <Link
+                    to="/jobs"
+                    className="text-sm font-medium text-primary-ink underline decoration-primary-ink/40 underline-offset-4"
+                  >
+                    Catálogo de puestos
+                  </Link>
+                </p>
+              </Card>
+            </div>
           </div>
-        </div>
+          <EmploymentSection
+            key={`${load.file.companyId}:${load.file.id}`}
+            fileId={load.file.id}
+          />
+        </>
       ) : null}
       {companyStatus === "ready" && !activeCompany ? (
         <EmptyState
